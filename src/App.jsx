@@ -5,6 +5,7 @@ import Nav from './components/Nav'
 import Footer from './components/Footer'
 import Preloader from './components/Preloader'
 import Cursor from './components/Cursor'
+import LiveDove from './components/LiveDove'
 import { RouterProvider, useRoute, Link } from './lib/router'
 import { ReadyCtx, SeatProvider, usePrefersReducedMotion } from './lib/util'
 import Home from './pages/Home'
@@ -132,6 +133,7 @@ export default function App() {
           <Nav />
           <Stage ready={ready} />
           <Footer />
+          <LiveDove />
         </ReadyCtx.Provider>
       </SeatProvider>
     </RouterProvider>

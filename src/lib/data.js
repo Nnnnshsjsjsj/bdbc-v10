@@ -10,14 +10,14 @@ export const EVENT = {
 // [path, label, photo, background, text colour]
 export const PAGES = [
   ['/', 'Home', 'gallery/2026/committee-vote', '#07152b', '#ffffff'],
-  ['/about', 'About', 'gallery/2026/audience', '#1b3fc2', '#ffffff'],
-  ['/program', 'Agenda', 'gallery/2026/committee-session', '#5aa9e6', '#07152b'],
-  ['/committees', 'Committees', 'gallery/2025/crisis-simulation', '#d4232c', '#ffffff'],
-  ['/impact', 'Impact', 'impact/donation-sorting', '#0b7f58', '#ffffff'],
-  ['/recognition', 'Recognition', 'gallery/2026/guest-visit', '#ffc927', '#07152b'],
-  ['/why-bdbc', 'Why BDBC', 'gallery/2026/delegate-speaking', '#1b3fc2', '#ffffff'],
-  ['/gallery', 'Gallery', 'gallery/2025/flag-tradition', '#d4232c', '#ffffff'],
-  ['/contact', 'Contact', 'gallery/2026/networking', '#0b7f58', '#ffffff'],
+  ['/about', 'About', 'gallery/2026/audience', '#152a7c', '#ffffff'],
+  ['/program', 'Agenda', 'gallery/2026/committee-session', '#1d5687', '#ffffff'],
+  ['/committees', 'Committees', 'gallery/2025/crisis-simulation', '#8f1a22', '#ffffff'],
+  ['/impact', 'Impact', 'impact/donation-sorting', '#0b4c3a', '#ffffff'],
+  ['/recognition', 'Recognition', 'gallery/2026/guest-visit', '#c08f1c', '#07152b'],
+  ['/why-bdbc', 'Why BDBC', 'gallery/2026/delegate-speaking', '#152a7c', '#ffffff'],
+  ['/gallery', 'Gallery', 'gallery/2025/flag-tradition', '#8f1a22', '#ffffff'],
+  ['/contact', 'Contact', 'gallery/2026/networking', '#0b4c3a', '#ffffff'],
 ]
 export const pageColour = (path) => {
   const p = PAGES.find((x) => x[0] === path)
@@ -42,7 +42,7 @@ export const AWARDS = ['Best Delegate', 'Best Speaker', 'Honourable Mention']
 export const COMMITTEES = [
   {
     id: 'security-crisis',
-    bg: '#d4232c',
+    bg: '#8f1a22',
     fg: '#ffffff',
     no: '01',
     name: 'Security Crisis Committee',
@@ -55,7 +55,7 @@ export const COMMITTEES = [
   },
   {
     id: 'business',
-    bg: '#0b7f58',
+    bg: '#0b4c3a',
     fg: '#ffffff',
     no: '02',
     name: 'Business Committee',
@@ -68,8 +68,8 @@ export const COMMITTEES = [
   },
   {
     id: 'ecosoc',
-    bg: '#5aa9e6',
-    fg: '#07152b',
+    bg: '#1d5687',
+    fg: '#ffffff',
     no: '03',
     name: 'ECOSOC – Economic and Social Council',
     short: 'ECOSOC',
@@ -81,7 +81,7 @@ export const COMMITTEES = [
   },
   {
     id: 'asean',
-    bg: '#ffc927',
+    bg: '#c08f1c',
     fg: '#07152b',
     no: '04',
     name: 'ASEAN Economic Community Council',
@@ -94,7 +94,7 @@ export const COMMITTEES = [
   },
   {
     id: 'european-council',
-    bg: '#1b3fc2',
+    bg: '#152a7c',
     fg: '#ffffff',
     no: '05',
     name: 'Model European Council',

@@ -34,6 +34,7 @@ Deploy to a preview URL first, submit one test application, and check the Sheet 
 - `public/logo.png` is the original logo, untouched, with a round mask.
 - `public/video/belgrade.mp4` is the hero clip (Pexels, free licence: "Aerial View of Belgrade Cityscape at Dusk").
 - `public/img/` holds every photo from v9, converted to WebP.
+- `src/components/LiveDove.jsx` is the live dove. Its frames are in `public/dove/` (side.webp = flying, hover.webp = hovering), keyed from two Pixabay green-screen clips (free Pixabay Content License): "Dove, White Dove, Dove Green Screen" (318501) and "White Dove, Flying Dove, 4K" (366117). Any page can make it move with `window.dispatchEvent(new CustomEvent('dove', { detail: 'hop' | 'spin' | 'loop' | 'dance' | 'celebrate' }))`.
 
 ## Still to do before launch
 

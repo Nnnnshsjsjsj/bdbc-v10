@@ -125,7 +125,7 @@ function Archive() {
   return (
     <section ref={root} className="on-light relative overflow-hidden bg-paper py-24 text-ink lg:h-[210vh] lg:py-0" aria-labelledby="archive-h">
       <svg className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path data-thread pathLength="1" strokeDasharray="1" d="M12 8 C 30 14, 40 4, 66 6 S 92 20, 88 28 S 60 40, 40 44 S 8 52, 14 66 S 36 80, 38 74 S 62 60, 64 70 S 90 66, 86 62 S 60 92, 54 92 S 20 96, 20 94" fill="none" stroke="#d4232c" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <path data-thread pathLength="1" strokeDasharray="1" d="M12 8 C 30 14, 40 4, 66 6 S 92 20, 88 28 S 60 40, 40 44 S 8 52, 14 66 S 36 80, 38 74 S 62 60, 64 70 S 90 66, 86 62 S 60 92, 54 92 S 20 96, 20 94" fill="none" stroke="#8f1a22" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
 
       <div className="wrap relative z-10 text-center lg:absolute lg:inset-x-0 lg:top-[36%]">
@@ -164,10 +164,10 @@ function Archive() {
 
 /* ---------- Stats ---------- */
 const STAT_COLOURS = [
-  ['#d4232c', '#ffffff'],
-  ['#ffc927', '#07152b'],
-  ['#5aa9e6', '#07152b'],
-  ['#1b3fc2', '#ffffff'],
+  ['#8f1a22', '#ffffff'],
+  ['#c08f1c', '#07152b'],
+  ['#1d5687', '#ffffff'],
+  ['#152a7c', '#ffffff'],
 ]
 function Stats() {
   return (

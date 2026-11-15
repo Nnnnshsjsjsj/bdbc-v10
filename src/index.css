@@ -9,19 +9,19 @@
   --color-globe: #9fbcd0;
   --color-paper: #f1f3f5;
   --color-paper-2: #e2e7ec;
-  --color-crimson: #d4232c;
-  --color-crimson-2: #a8141c;
+  --color-crimson: #b0202a;
+  --color-crimson-2: #861820;
   --color-gold: #e6b450;
   --color-text: #0f2238;
   --color-muted: #50627a;
 
   /* Committee and section colours, taken from the institutions themselves */
-  --color-signal: #d4232c; /* Security Crisis: alert red */
-  --color-emerald: #0b7f58; /* Business: markets green */
-  --color-un: #5aa9e6; /* ECOSOC: UN blue */
-  --color-sun: #ffc927; /* ASEAN: emblem yellow */
-  --color-eu: #1b3fc2; /* European Council: EU blue */
-  --color-sky: #bfe0f7;
+  --color-signal: #8f1a22; /* Security Crisis: alert red */
+  --color-emerald: #0b4c3a; /* Business: markets green */
+  --color-un: #1d5687; /* ECOSOC: UN blue */
+  --color-sun: #c08f1c; /* ASEAN: emblem yellow */
+  --color-eu: #152a7c; /* European Council: EU blue */
+  --color-sky: #7f9bb4;
 
   --font-sans: 'Archivo Variable', system-ui, sans-serif;
   --font-serif: 'Newsreader Variable', Georgia, serif;

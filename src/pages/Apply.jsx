@@ -9,6 +9,7 @@ import { Field } from './Contact'
 
 const EMPTY = { dateOfBirth: '', fullName: '', email: '', phone: '', countryCity: '', socialMedia: '', educationLevel: '', educationOther: '', institution: '', experience: '', committee1: '', committee2: '', committee3: '', countries1: '', countries2: '', countries3: '', dietary: '', dietaryOther: '', motivation: '', paymentMethod: '' }
 const ORD = ['1st', '2nd', '3rd']
+const dove = (detail) => window.dispatchEvent(new CustomEvent('dove', { detail }))
 
 export default function Apply() {
   useTitle('Apply')
@@ -16,7 +17,16 @@ export default function Apply() {
   const pre = COMMITTEES.find((c) => c.id === seat)
   const [f, setF] = useState(() => ({ ...EMPTY, committee1: pre?.formValue || '' }))
   const [state, setState] = useState('idle')
-  const set = (e) => setF((v) => ({ ...v, [e.target.name]: e.target.value }))
+  const set = (e) => {
+    const { name, value, type } = e.target
+    setF((v) => ({ ...v, [name]: value }))
+    // the dove reacts to the application: a spin for committees, a hop for other choices
+    if (type === 'radio') dove(name.startsWith('committee') ? 'spin' : 'hop')
+  }
+  // a hop each time a text answer is completed
+  const done = (e) => {
+    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName) && e.target.type !== 'radio' && e.target.value.trim()) dove('hop')
+  }
   const country = f.countries1.split(/[,;\n]/)[0]?.trim()
 
   const submit = async (e) => {
@@ -44,6 +54,7 @@ export default function Apply() {
       paymentMethod: f.paymentMethod,
     }
     setState('submitting')
+    dove('celebrate')
     try {
       await postForm(payload)
       setState('done')
@@ -91,7 +102,7 @@ export default function Apply() {
 
       <section className="on-light bg-paper py-20 md:py-32">
         <div className="wrap grid gap-16 lg:grid-cols-12">
-          <form onSubmit={submit} className="space-y-12 lg:col-span-7">
+          <form onSubmit={submit} onBlur={done} className="space-y-12 lg:col-span-7">
             <div>
               <h2 className="display t-lg text-ink">Your Application</h2>
               <p className="mt-3 text-muted">
@@ -200,7 +211,7 @@ export default function Apply() {
 
           <aside className="lg:col-span-4 lg:col-start-9">
             <div className="lg:sticky lg:top-28">
-              <div className="on-dark hidden bg-navy px-8 pb-12 pt-16 lg:block">
+              <div className="on-dark hidden bg-navy px-8 pb-12 pt-16 lg:block" data-dove-perch>
                 <Badge swing={false} name={f.fullName || 'Your Name Here'} country={country || 'Your Country Awaits'} />
               </div>
               <div className="mt-10">

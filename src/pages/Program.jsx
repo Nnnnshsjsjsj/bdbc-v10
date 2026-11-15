@@ -33,7 +33,7 @@ export default function Program() {
             <article key={d.title} className="mt-20 grid gap-8 md:mt-28 md:grid-cols-12">
               <header className="md:sticky md:top-28 md:col-span-5 md:self-start">
                 <Eyebrow className="mb-6 text-crimson">{d.tag}</Eyebrow>
-                <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75]" style={{ color: ['#d4232c', '#1b3fc2', '#0b7f58'][di] }} aria-hidden="true">
+                <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75]" style={{ color: ['#8f1a22', '#152a7c', '#0b4c3a'][di] }} aria-hidden="true">
                   0{di + 1}
                 </p>
                 <Lines as="h2" className="display t-md mt-4 text-ink" lines={[d.title.split(': ')[0] + ':', d.title.split(': ')[1]]} />
