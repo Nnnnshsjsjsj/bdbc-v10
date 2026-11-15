@@ -123,7 +123,7 @@ function Archive() {
     return () => mm.revert()
   }, [])
   return (
-    <section ref={root} className="on-light relative overflow-hidden bg-paper py-24 text-ink lg:h-[210vh] lg:py-0" aria-labelledby="archive-h">
+    <section ref={root} data-dove-say="home-archive" className="on-light relative overflow-hidden bg-paper py-24 text-ink lg:h-[210vh] lg:py-0" aria-labelledby="archive-h">
       <svg className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <path data-thread pathLength="1" strokeDasharray="1" d="M12 8 C 30 14, 40 4, 66 6 S 92 20, 88 28 S 60 40, 40 44 S 8 52, 14 66 S 36 80, 38 74 S 62 60, 64 70 S 90 66, 86 62 S 60 92, 54 92 S 20 96, 20 94" fill="none" stroke="#8f1a22" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
@@ -171,7 +171,7 @@ const STAT_COLOURS = [
 ]
 function Stats() {
   return (
-    <section className="grid grid-cols-2 lg:grid-cols-4" aria-label="BDBC in numbers">
+    <section data-dove-say="home-stats" className="grid grid-cols-2 lg:grid-cols-4" aria-label="BDBC in numbers">
       {STATS.map((s, i) => (
         <div key={s.label} className="flex min-h-[44vw] flex-col justify-between p-5 md:p-10 lg:min-h-[34vw]" style={{ background: STAT_COLOURS[i][0], color: STAT_COLOURS[i][1] }}>
           <p className="label opacity-80" data-fade>
@@ -195,7 +195,7 @@ function Stats() {
 /* ---------- More than a conference ---------- */
 function MoreThan() {
   return (
-    <section className="on-light bg-paper py-28 md:py-48">
+    <section data-dove-say="home-impact" className="on-light bg-paper py-28 md:py-48">
       <div className="wrap grid gap-12 md:grid-cols-12">
         <div className="md:col-span-3">
           <Eyebrow className="text-crimson">More than a conference</Eyebrow>
@@ -244,7 +244,7 @@ function Rooms() {
     return () => mm.revert()
   }, [])
   return (
-    <section ref={section} className="on-dark overflow-hidden bg-ink-2 text-white" aria-labelledby="rooms-h">
+    <section ref={section} data-dove-say="home-rooms" className="on-dark overflow-hidden bg-ink-2 text-white" aria-labelledby="rooms-h">
       <div ref={track} className="flex snap-x snap-mandatory overflow-x-auto lg:h-screen lg:w-max lg:snap-none lg:overflow-visible">
         <div className="flex w-screen shrink-0 snap-start flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-14 pt-32 lg:w-[62vw]">
           <Eyebrow className="mb-8 text-gold">Five committees · One conference</Eyebrow>
@@ -322,7 +322,7 @@ function Discover() {
 /* ---------- Awards ---------- */
 function Awards() {
   return (
-    <section className="on-dark grid bg-ink text-white lg:grid-cols-2">
+    <section data-dove-say="home-awards" className="on-dark grid bg-ink text-white lg:grid-cols-2">
       <FogTrophy />
       <div className="flex flex-col justify-center px-[clamp(1.1rem,3.2vw,3.2rem)] py-24 lg:py-32">
         <Eyebrow className="mb-8 text-gold">Awards</Eyebrow>
@@ -345,7 +345,7 @@ function Awards() {
 /* ---------- Claim your seat ---------- */
 function Seat() {
   return (
-    <section className="on-dark relative overflow-hidden bg-eu text-white">
+    <section data-dove-say="home-seat" className="on-dark relative overflow-hidden bg-eu text-white">
       <div className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(ellipse 60% 70% at 75% 40%, rgba(90,169,230,.55), transparent 70%)' }} />
       <div className="wrap relative grid items-center gap-16 py-28 md:grid-cols-2 md:py-40">
         <div>

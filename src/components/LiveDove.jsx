@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRoute } from '../lib/router'
 import { asset, useReady } from '../lib/util'
+import { APPLY_HOVER, ARRIVE, CLICK, CLICK_ANNOYED, CLICK_GIVEUP, FAST_SCROLL, IDLE, NIGHT, SECTIONS, WELCOME_BACK, pick } from '../lib/mirLines'
 
 /*
   Mir, the BDBC dove. "Mir" is Serbian for peace.
@@ -26,16 +27,6 @@ const SHEETS = {
 }
 const BOX_W = 460
 const BOX_H = 350
-
-const GREETINGS = {
-  '/': 'Hi, I’m Mir, the BDBC dove. Applications for 2027 are open!',
-  '/committees': 'Five committees, five rooms. Pick one and I’ll save you a seat.',
-  '/apply': 'Let’s do this. I’ll cheer you on.',
-  '/impact': 'Every fee goes to children who need it most.',
-  '/program': 'Three days. Stay for the closing gavel.',
-  '/why-bdbc': 'First conference? Most of us started that way.',
-}
-const CLICK_LINES = ['Coo!', 'Mir means peace.', 'By youth, for youth!', 'See you in Belgrade.', 'Careful, I bruise easily.']
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
@@ -92,10 +83,18 @@ export default function LiveDove() {
   const bubbleTimer = useRef(0)
   const greeted = useRef(new Set())
 
-  api.current.say = (text, ms = 3800) => {
+  // Mir talks. Chatter (greetings, sections, idle) waits for a quiet moment;
+  // reactions to what you do (forced) always get through.
+  const lastSaid = useRef(0)
+  api.current.say = (text, ms, force = true) => {
+    if (!text) return false
+    const now = performance.now()
+    if (!force && now - lastSaid.current < 5500) return false
+    lastSaid.current = now
     clearTimeout(bubbleTimer.current)
     setBubble({ text, id: Math.random() })
-    bubbleTimer.current = setTimeout(() => setBubble(null), ms)
+    bubbleTimer.current = setTimeout(() => setBubble(null), ms || clamp(2400 + text.length * 48, 2600, 7000))
+    return true
   }
 
   useEffect(() => {
@@ -109,14 +108,56 @@ export default function LiveDove() {
   // one line when arriving on a page (once per page per visit)
   useEffect(() => {
     if (!ready || !on) return
-    const line = GREETINGS[path]
-    if (!line || greeted.current.has(path)) return
-    greeted.current.add(path)
-    const t = setTimeout(() => {
-      api.current.say(line, 5200)
-      window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'hop' } }))
-    }, 1500)
-    return () => clearTimeout(t)
+    const timers = []
+    if (!greeted.current.has(path) && ARRIVE[path]) {
+      greeted.current.add(path)
+      const hour = new Date().getHours()
+      const line = path === '/' && (hour >= 23 || hour < 5) ? pick(NIGHT) : pick(ARRIVE[path])
+      timers.push(
+        setTimeout(() => {
+          api.current.say(line)
+          window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'hop' } }))
+        }, 1500),
+      )
+    }
+    // sections with something to say: once each, when they scroll into view
+    const spoken = new Set()
+    const visible = new Set()
+    let io
+    timers.push(
+      setTimeout(() => {
+        io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((en) => {
+              const key = en.target.dataset.doveSay
+              if (!en.isIntersecting) {
+                visible.delete(key)
+                return
+              }
+              visible.add(key)
+              if (spoken.has(key) || !SECTIONS[key]) return
+              const tryIt = (n) => {
+                if (!visible.has(key) || spoken.has(key)) return
+                // stacked (sticky) sections all count as visible; only the top-most one speaks
+                const els = [...document.querySelectorAll('[data-dove-say]')].filter((el) => visible.has(el.dataset.doveSay))
+                if (els.length && els[els.length - 1].dataset.doveSay !== key) return
+                if (api.current.say(SECTIONS[key], undefined, false)) {
+                  spoken.add(key)
+                  window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'wiggle' } }))
+                } else if (n < 3) timers.push(setTimeout(() => tryIt(n + 1), 2500))
+              }
+              tryIt(0)
+            })
+          },
+          { threshold: 0.45 },
+        )
+        document.querySelectorAll('[data-dove-say]').forEach((el) => io.observe(el))
+      }, 2200),
+    )
+    return () => {
+      timers.forEach(clearTimeout)
+      io?.disconnect()
+    }
   }, [path, ready, on])
 
   useEffect(() => {
@@ -243,14 +284,64 @@ export default function LiveDove() {
       if (now - lastCheer < 8000) return
       lastCheer = now
       addMove('hop')
-      api.current.say('Go on, claim your seat!', 2600)
+      api.current.say(pick(APPLY_HOVER), undefined, false)
     }
     document.addEventListener('pointerover', onOver)
 
+    let clicks = []
     api.current.poke = () => {
-      fly('loop')
-      burst(pos.x, pos.y, 10)
-      api.current.say(CLICK_LINES[(Math.random() * CLICK_LINES.length) | 0], 2600)
+      const now = performance.now()
+      clicks = clicks.filter((t) => now - t < 5000).concat(now)
+      const n = clicks.length
+      if (n >= 7) {
+        clicks = []
+        s.flight = null
+        fly('lap')
+        burst(pos.x, pos.y, 30, true)
+        api.current.say(pick(CLICK_GIVEUP))
+      } else if (n >= 4) {
+        addMove('wiggle')
+        addMove('hop')
+        api.current.say(pick(CLICK_ANNOYED))
+      } else {
+        fly('loop')
+        burst(pos.x, pos.y, 10)
+        api.current.say(pick(CLICK))
+      }
+    }
+
+    // idle chatter, fast-scroll complaints, welcome-back
+    let lastActive = performance.now()
+    let lastIdle = performance.now()
+    let lastFast = 0
+    let hiddenAt = 0
+    const active = () => (lastActive = performance.now())
+    window.addEventListener('pointermove', active, { passive: true })
+    window.addEventListener('keydown', active)
+    window.addEventListener('scroll', active, { passive: true })
+    const idleTimer = setInterval(() => {
+      const now = performance.now()
+      if (now - lastActive > 28000 && now - lastIdle > 45000) {
+        lastIdle = now
+        const p = pathRef.current
+        const list = IDLE[p] && Math.random() < 0.6 ? IDLE[p] : IDLE.default
+        if (api.current.say(pick(list), undefined, false)) addMove('dance')
+      }
+    }, 2000)
+    const onHidden = () => {
+      if (document.hidden) hiddenAt = performance.now()
+      else if (hiddenAt && performance.now() - hiddenAt > 8000) {
+        api.current.say(pick(WELCOME_BACK))
+        addMove('hop')
+      }
+    }
+    document.addEventListener('visibilitychange', onHidden)
+    s.cleanupExtra = () => {
+      clearInterval(idleTimer)
+      window.removeEventListener('pointermove', active)
+      window.removeEventListener('keydown', active)
+      window.removeEventListener('scroll', active)
+      document.removeEventListener('visibilitychange', onHidden)
     }
 
     let lastDance = performance.now() / 1000
@@ -314,6 +405,10 @@ export default function LiveDove() {
       const sv = window.scrollY - s.lastScroll
       s.lastScroll = window.scrollY
       s.scrollV += (clamp(Math.abs(sv) / 40, 0, 1) - s.scrollV) * Math.min(1, dt * 4)
+      if (Math.abs(sv) / Math.max(dt, 0.008) > 5000 && now - lastFast > 40) {
+        lastFast = now
+        api.current.say(pick(FAST_SCROLL), undefined, false)
+      }
 
       if (!reduced) y += Math.sin(now * 2.4) * (3 + 4 * s.excite) - s.scrollV * 6
 
@@ -403,6 +498,7 @@ export default function LiveDove() {
       window.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerover', onOver)
       document.removeEventListener('visibilitychange', onVis)
+      s.cleanupExtra?.()
     }
   }, [ready, on])
 
@@ -421,8 +517,8 @@ export default function LiveDove() {
     <>
       <canvas ref={fx} className="pointer-events-none fixed inset-0 z-[95] h-screen w-screen" aria-hidden="true" />
       {/* his perch: a small navy disc in the corner */}
-      <div ref={disc} className="pointer-events-none fixed bottom-5 right-5 z-[94] rounded-full bg-ink shadow-[0_14px_30px_-10px_rgba(4,12,26,.6)] ring-2 ring-gold/70" aria-hidden="true">
-        <div className="absolute inset-0 animate-[ping_2.8s_cubic-bezier(0,0,.2,1)_infinite] rounded-full ring-2 ring-gold/40" />
+      <div ref={disc} onClick={() => api.current.poke?.()} className="fixed bottom-5 right-5 z-[94] cursor-pointer rounded-full bg-ink shadow-[0_14px_30px_-10px_rgba(4,12,26,.6)] ring-2 ring-gold/70" aria-hidden="true">
+        <div className="pointer-events-none absolute inset-0 animate-[ping_2.8s_cubic-bezier(0,0,.2,1)_infinite] rounded-full ring-2 ring-gold/40" />
       </div>
       <div ref={wrap} className="fixed left-0 top-0 z-[96] will-change-transform" style={{ transform: 'translate3d(-400px,-400px,0)' }}>
         <button onClick={() => api.current.poke?.()} className="block rounded-full" aria-label="Mir, the BDBC dove. Click for a trick.">
@@ -433,6 +529,7 @@ export default function LiveDove() {
       <div ref={bubbleBox} className="pointer-events-none fixed bottom-40 right-5 z-[97] flex max-w-[min(78vw,19rem)] justify-end" aria-live="polite">
         {bubble && (
           <div key={bubble.id} className="dove-bubble relative rounded-2xl bg-white px-4 py-3 text-[0.92rem] font-semibold leading-snug text-ink shadow-[0_18px_40px_-12px_rgba(4,12,26,.5)]">
+            <span className="label mb-1 block text-[0.6rem] text-crimson">Mir</span>
             {bubble.text}
             <span className="absolute -bottom-1.5 right-[clamp(22px,2.6vw,38px)] h-3.5 w-3.5 rotate-45 bg-white" aria-hidden="true" />
           </div>

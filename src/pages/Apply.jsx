@@ -5,6 +5,7 @@ import { Link } from '../lib/router'
 import { COMMITTEES, FORM_OPTIONS } from '../lib/data'
 import { CAN_SUBMIT, postForm } from '../lib/forms'
 import { useSeat, useTitle } from '../lib/util'
+import { COMMITTEE_PICK, DIETARY, FIELD, PAYMENT, PROGRESS, SUBMITTED } from '../lib/mirLines'
 import { Field } from './Contact'
 
 const EMPTY = { dateOfBirth: '', fullName: '', email: '', phone: '', countryCity: '', socialMedia: '', educationLevel: '', educationOther: '', institution: '', experience: '', committee1: '', committee2: '', committee3: '', countries1: '', countries2: '', countries3: '', dietary: '', dietaryOther: '', motivation: '', paymentMethod: '' }
@@ -22,12 +23,10 @@ export default function Apply() {
     setF((v) => ({ ...v, [name]: value }))
     // the dove reacts to the application: a spin for committees, a hop for other choices
     if (type !== 'radio') return
-    if (name.startsWith('committee')) {
-      const c = COMMITTEES.find((x) => x.formValue === value)
-      dove({ move: 'spin', say: `${c ? c.short : 'Good'}! Great choice.` })
-    } else if (name === 'paymentMethod') {
-      dove({ move: 'dance', say: value.startsWith('Bank') ? 'Smart, you save €5.' : 'Cash works too. Bring exact change!' })
-    } else dove({ move: 'hop' })
+    if (name.startsWith('committee')) dove({ move: 'spin', say: COMMITTEE_PICK[value] })
+    else if (name === 'paymentMethod') dove({ move: 'dance', say: value.startsWith('Bank') ? PAYMENT.bank : PAYMENT.cash })
+    else if (name === 'dietary') dove({ move: 'hop', say: DIETARY[value] })
+    else dove({ move: 'hop' })
   }
   // a hop each time a text answer is completed
   const answered = useRef(new Set())
@@ -36,8 +35,15 @@ export default function Apply() {
     if (!['INPUT', 'TEXTAREA'].includes(el.tagName) || el.type === 'radio' || !el.value.trim() || answered.current.has(el.name)) return
     answered.current.add(el.name)
     const n = answered.current.size
-    const lines = { 1: 'Great start!', 4: 'Keep going!', 7: 'Looking good, delegate.', 10: 'Almost there!' }
-    dove({ move: 'hop', say: lines[n] })
+    dove({ move: 'hop', say: PROGRESS[n] })
+  }
+  // a comment the first time each field is opened
+  const seen = useRef(new Set())
+  const focus = (e) => {
+    const n = e.target.name
+    if (!FIELD[n] || seen.current.has(n)) return
+    seen.current.add(n)
+    dove({ say: FIELD[n] })
   }
   const country = f.countries1.split(/[,;\n]/)[0]?.trim()
 
@@ -66,7 +72,7 @@ export default function Apply() {
       paymentMethod: f.paymentMethod,
     }
     setState('submitting')
-    dove({ move: 'celebrate', say: 'You’re in! See you in Belgrade.', ms: 6000 })
+    dove({ move: 'celebrate', say: SUBMITTED, ms: 6500 })
     try {
       await postForm(payload)
       setState('done')
@@ -114,7 +120,7 @@ export default function Apply() {
 
       <section className="on-light bg-paper py-20 md:py-32">
         <div className="wrap grid gap-16 lg:grid-cols-12">
-          <form onSubmit={submit} onBlur={done} className="space-y-12 lg:col-span-7">
+          <form onSubmit={submit} onBlur={done} onFocus={focus} className="space-y-12 lg:col-span-7">
             <div>
               <h2 className="display t-lg text-ink">Your Application</h2>
               <p className="mt-3 text-muted">

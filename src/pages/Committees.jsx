@@ -37,13 +37,14 @@ export default function Committees() {
           <section
             key={c.id}
             id={c.id}
+            data-dove-say={c.id}
             className={`relative grid overflow-hidden lg:sticky lg:top-0 lg:h-screen lg:grid-cols-12 ${c.fg === '#ffffff' ? 'on-dark' : 'on-light'}`}
             style={{ zIndex: i + 1, background: c.bg, color: c.fg }}
             aria-labelledby={`${c.id}-h`}
           >
             <div className="relative h-[52vh] overflow-hidden lg:order-2 lg:col-span-6 lg:h-full">
               <img src={img(c.img)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-              <p className="display absolute bottom-4 right-6 text-[clamp(6rem,14vw,14rem)] leading-[0.8] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,.35)]" aria-hidden="true">
+              <p className="display absolute bottom-4 left-6 text-[clamp(6rem,14vw,14rem)] leading-[0.8] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,.35)]" aria-hidden="true">
                 {c.no}
               </p>
             </div>

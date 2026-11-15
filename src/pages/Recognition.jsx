@@ -88,6 +88,7 @@ export default function Recognition() {
       <section className="on-light bg-paper py-24 md:py-40">
         <div className="wrap">
           <Eyebrow className="mb-8 text-crimson">Our supporters</Eyebrow>
+          <span data-dove-say="recognition-partners" className="block h-px" aria-hidden="true" />
           <Lines className="display t-xl text-ink" lines={['Sponsors', '& Partners']} />
           <p className="lede mt-8 text-muted" data-fade>
             Organizations that believe in what we’re building.

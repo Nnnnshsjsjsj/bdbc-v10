@@ -30,7 +30,7 @@ export default function Program() {
             ))}
           </div>
           {AGENDA.map((d, di) => (
-            <article key={d.title} className="mt-20 grid gap-8 md:mt-28 md:grid-cols-12">
+            <article key={d.title} data-dove-say={di === 2 ? 'program-day3' : undefined} className="mt-20 grid gap-8 md:mt-28 md:grid-cols-12">
               <header className="md:sticky md:top-28 md:col-span-5 md:self-start">
                 <Eyebrow className="mb-6 text-crimson">{d.tag}</Eyebrow>
                 <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75]" style={{ color: ['#8f1a22', '#152a7c', '#0b4c3a'][di] }} aria-hidden="true">

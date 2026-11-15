@@ -33,6 +33,7 @@ export default function WhyBdbc() {
       <section className="on-dark bg-ink py-24 text-white md:py-40">
         <div className="wrap">
           <Eyebrow className="mb-8 text-gold">How we compare</Eyebrow>
+          <span data-dove-say="why-compare" className="block h-px" aria-hidden="true" />
           <Lines className="display t-xl" lines={['BDBC vs.', 'a Typical MUN']} />
           <div className="mt-16 overflow-x-auto" data-fade>
             <table className="w-full min-w-[34rem] border-collapse text-left">

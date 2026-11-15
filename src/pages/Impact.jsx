@@ -77,6 +77,7 @@ export default function Impact() {
           </div>
           <div className="md:col-span-6 md:col-start-7">
             <Eyebrow className="mb-8 text-crimson">Food donation initiative</Eyebrow>
+            <span data-dove-say="impact-food" className="block h-px" aria-hidden="true" />
             <Lines className="display t-lg text-ink" lines={['Helping Those', 'Who Need It', 'the Most']} />
             <div className="prose lede mt-10 text-text/85">
               <p data-fade>Creating a successful conference also means taking responsibility for what remains after it ends. At Belgrade Diplomacy &amp; Business Conference (BDBC), we believe that even the smallest actions can have a meaningful impact — especially when they help children who need it most.</p>

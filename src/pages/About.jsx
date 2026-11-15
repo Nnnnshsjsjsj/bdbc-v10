@@ -42,7 +42,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="on-dark bg-ink py-24 text-white md:py-40">
+      <section data-dove-say="about-founders" className="on-dark bg-ink py-24 text-white md:py-40">
         <div className="wrap">
           <Eyebrow className="mb-8 text-gold">The people behind everything</Eyebrow>
           <Lines className="display t-xl" lines={['Founded', 'with Purpose']} />
@@ -71,6 +71,7 @@ export default function About() {
           <div className="grid gap-10 md:grid-cols-12 md:items-end">
             <div className="md:col-span-7">
               <Eyebrow className="mb-8 text-crimson">This year’s team</Eyebrow>
+              <span data-dove-say="about-board" className="block h-px" aria-hidden="true" />
               <Lines className="display t-xl text-ink" lines={['Organising', 'Board 2027']} />
             </div>
             <p className="lede text-muted md:col-span-5" data-fade>
@@ -92,7 +93,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="on-light bg-sun py-24 text-ink md:py-40">
+      <section data-dove-say="about-values" className="on-light bg-sun py-24 text-ink md:py-40">
         <div className="wrap">
           <Eyebrow className="mb-8 text-ink">What we stand for</Eyebrow>
           <Lines className="display t-xl" lines={['Mission', '& Values']} />
@@ -110,6 +111,7 @@ export default function About() {
       <section className="on-light bg-paper py-24 md:py-40">
         <div className="wrap">
           <Eyebrow className="mb-8 text-crimson">Distinguished guests</Eyebrow>
+          <span data-dove-say="about-guests" className="block h-px" aria-hidden="true" />
           <Lines className="display t-lg text-ink" lines={['Guest Speakers Who', 'Supported the Event']} />
           <p className="lede mt-8 max-w-2xl text-muted" data-fade>
             Distinguished voices from diplomacy, European youth policy, and political science.
