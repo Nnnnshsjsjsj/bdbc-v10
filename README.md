@@ -12,6 +12,10 @@ npm run build      # production build in dist/
 
 `VITE_PREVIEW=1 npm run build` makes the sandboxed preview (hash routes, relative paths, forms switched off). Do not deploy that build.
 
+## Draft review on GitHub Pages
+
+Every push to `main` publishes the preview build to GitHub Pages (`.github/workflows/pages.yml`). Forms are switched off there.
+
 ## Deploy (Cloudflare Pages)
 
 Build command `npm run build`, output folder `dist`. `public/_redirects` sends the old v9 URLs (`/recognition`, `/why-bdbc`, `/agenda`) to their new homes and serves `index.html` for every other path.
