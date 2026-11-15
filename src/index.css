@@ -1,0 +1,325 @@
+@import 'tailwindcss';
+
+/* BDBC 2027 tokens. Colours sampled from the logo. */
+@theme {
+  --color-ink: #0c2340; /* deep navy ground */
+  --color-navy: #113158; /* logo navy */
+  --color-sea: #024f85; /* logo ring blue */
+  --color-globe: #9fbcd0; /* logo globe lines */
+  --color-paper: #eef0ed;
+  --color-paper-2: #e1e5e2;
+  --color-crimson: #9b1c14; /* logo red, the only accent */
+  --color-crimson-2: #7e150f;
+  --color-brass: #b08a43; /* awards only */
+  --color-text: #12263e;
+  --color-muted: #4b5b6e;
+
+  --font-sans: 'Archivo Variable', system-ui, sans-serif;
+  --font-serif: 'Newsreader Variable', Georgia, serif;
+  --font-display: 'Archivo Variable', system-ui, sans-serif;
+
+  --radius-ui: 4px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-paper font-sans text-text antialiased;
+    font-variation-settings: 'wdth' 100;
+  }
+  ::selection {
+    background: var(--color-crimson);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-sea);
+    outline-offset: 3px;
+  }
+  .on-ink :focus-visible {
+    outline-color: #fff;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Condensed heavy Archivo: placard lettering. Used for headlines and names. */
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 68;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+}
+.font-display-wide {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 112;
+  font-weight: 650;
+}
+
+/* Type scale (1.25 minor third, fluid at the top). */
+.t-hero {
+  font-size: clamp(3.4rem, 1.2rem + 7.4vw, 9.5rem);
+  line-height: 0.86;
+}
+.t-1 {
+  font-size: clamp(2.5rem, 1.4rem + 4.2vw, 5.5rem);
+  line-height: 0.92;
+}
+.t-2 {
+  font-size: clamp(1.9rem, 1.3rem + 2.2vw, 3.2rem);
+  line-height: 1;
+}
+.t-3 {
+  font-size: clamp(1.35rem, 1.15rem + 0.8vw, 1.8rem);
+  line-height: 1.15;
+}
+.t-lede {
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  line-height: 1.5;
+}
+.measure {
+  max-width: 68ch;
+}
+.measure-serif {
+  max-width: 72ch;
+}
+.prose-serif {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.65;
+}
+.prose-serif p + p {
+  margin-top: 1em;
+}
+
+/* Buttons: one small radius, plain words. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: var(--radius-ui);
+  padding: 0.95rem 1.35rem;
+  font-weight: 650;
+  font-size: 1rem;
+  line-height: 1;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.btn-apply {
+  background: var(--color-crimson);
+  color: #fff;
+}
+.btn-apply:hover {
+  background: var(--color-crimson-2);
+}
+.btn-quiet {
+  border: 1.5px solid currentColor;
+}
+.btn-quiet:hover {
+  background: color-mix(in oklab, currentColor 10%, transparent);
+}
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ---------- Placard ---------- */
+.placard-stage {
+  perspective: 1100px;
+  --placard-country: clamp(2.2rem, 1.4rem + 2.6vw, 3.4rem);
+}
+.placard {
+  position: relative;
+  width: min(100%, 26rem);
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.placard--tilt {
+  transform: rotateX(14deg) rotateY(-16deg) rotateZ(1.5deg);
+}
+.placard__face {
+  position: relative;
+  background: #fbfbf8;
+  padding: 1.25rem 1.5rem 1.6rem;
+  box-shadow:
+    0 1px 0 rgba(12, 35, 64, 0.08),
+    0 30px 60px -30px rgba(4, 12, 26, 0.65);
+  transform-origin: bottom center;
+}
+.placard__face::after {
+  /* paper grain */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.1 0 0 0 0 0.2 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.placard__fold {
+  height: 1.4rem;
+  background: linear-gradient(#d9dcd6, #c2c7c2);
+  transform-origin: top center;
+  transform: rotateX(-62deg);
+}
+.write-in {
+  border-bottom: 2px dashed rgba(12, 35, 64, 0.28);
+}
+.flap {
+  animation: flap 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: 50% 0;
+}
+@keyframes flap {
+  from {
+    transform: rotateX(-80deg) translateY(-0.2em);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ---------- Seating plan ---------- */
+.seat-table {
+  cursor: pointer;
+  outline: none;
+}
+.seat-table .tbl {
+  fill: #fbfbf8;
+  stroke: var(--color-navy);
+  stroke-width: 1.5;
+  transition:
+    fill 0.2s,
+    transform 0.25s;
+}
+.seat-table .chair {
+  fill: var(--color-paper-2);
+  stroke: var(--color-navy);
+  stroke-width: 1.2;
+  transition: fill 0.2s;
+}
+.seat-table .lbl {
+  fill: var(--color-navy);
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 70;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+}
+.seat-table:hover .tbl,
+.seat-table:focus-visible .tbl {
+  fill: #ffffff;
+}
+.seat-table:hover .chair,
+.seat-table:focus-visible .chair {
+  fill: var(--color-globe);
+}
+.seat-table:focus-visible .tbl {
+  stroke: var(--color-sea);
+  stroke-width: 4;
+}
+.seat-table[aria-pressed='true'] .tbl {
+  fill: var(--color-navy);
+}
+.seat-table[aria-pressed='true'] .lbl {
+  fill: #fff;
+}
+.seat-table[aria-pressed='true'] .chair {
+  fill: var(--color-crimson);
+  stroke: var(--color-crimson);
+}
+
+/* ---------- Fog ---------- */
+.fog-layer {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: calc(100% + 2700px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .009' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.78 0 0 0 0 0.82 0 0 0 0 0.86 0 0 0 1.6 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size: 900px 600px;
+  pointer-events: none;
+}
+.fog-a {
+  opacity: 0.95;
+  animation: drift 70s linear infinite;
+}
+.fog-b {
+  opacity: 0.6;
+  background-size: 900px 700px;
+  animation: drift 110s linear infinite;
+}
+.fog-c {
+  opacity: 0.9;
+  animation: drift 50s linear infinite;
+  -webkit-mask-image: radial-gradient(circle 15rem at var(--mx, 50%) var(--my, 45%), transparent 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
+  mask-image: radial-gradient(circle 15rem at var(--mx, 50%) var(--my, 45%), transparent 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
+}
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-900px, 0, 0);
+  }
+}
+
+/* ---------- Gallery lightbox ---------- */
+dialog::backdrop {
+  background: rgba(6, 16, 30, 0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .fog-layer {
+    animation: none !important;
+  }
+}
+
+/* Form fields: the second (and last) corner radius. */
+.field {
+  display: block;
+  width: 100%;
+  border: 1.5px solid rgba(12, 35, 64, 0.22);
+  border-radius: var(--radius-ui);
+  background: #fff;
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+.field:hover {
+  border-color: rgba(12, 35, 64, 0.45);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-sea);
+  box-shadow: 0 0 0 3px rgba(2, 79, 133, 0.2);
+}
+label:has(> input.sr-only:focus-visible) {
+  outline: 3px solid var(--color-sea);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
