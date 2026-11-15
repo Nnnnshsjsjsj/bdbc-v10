@@ -4,7 +4,7 @@ import { Link } from '../lib/router'
 import { Btn, Eyebrow, Lines, Marquee, Photo } from '../components/ui'
 import Badge from '../components/Badge'
 import FogTrophy from '../components/FogTrophy'
-import { AWARDS, COMMITTEES, DISCOVER, PARTNERS, STATS } from '../lib/data'
+import { AWARDS, COMMITTEES, DISCOVER, GALLERY, PARTNERS, STATS } from '../lib/data'
 import { asset, img, useTitle } from '../lib/util'
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
     <>
       <Hero />
       <Slogan />
-      <Moments />
+      <Archive />
       <Stats />
       <MoreThan />
       <Rooms />
@@ -42,8 +42,7 @@ function Hero() {
           <source src={asset('video/belgrade.mp4')} type="video/mp4" />
         </video>
       </div>
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/55 to-ink/50" />
-      <div className="absolute inset-0 -z-10 bg-navy/35 mix-blend-multiply" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/95 via-ink/25 to-ink/45" />
 
       <div data-hero-copy className="wrap flex h-full flex-col justify-end pb-8 pt-28 md:pb-10">
         <p className="label mb-5 flex items-center gap-3 text-white/85 md:mb-7" data-fade>
@@ -87,7 +86,7 @@ function Slogan() {
     </span>
   )
   return (
-    <section className="on-light overflow-hidden bg-paper py-10 text-ink md:py-16" aria-label="By Youth, For Youth">
+    <section className="on-light overflow-hidden bg-sun py-8 text-ink md:py-12" aria-label="By Youth, For Youth">
       <Marquee dur={28}>
         {item}
         {item}
@@ -96,48 +95,99 @@ function Slogan() {
   )
 }
 
-/* ---------- Three moments ---------- */
-function Moments() {
+/* ---------- Archive: the story so far, as scattered prints ---------- */
+const PRINTS = [
+  ['gallery/2025/gpmun-sign', 3, 2, 24, -6, -170],
+  ['gallery/2025/venue-hall', 30, 7, 19, 4, 70],
+  ['gallery/2025/flag-tradition', 58, 1, 21, -3, -110],
+  ['gallery/2025/opening-audience', 80, 12, 17, 7, 130],
+  ['gallery/2025/crisis-simulation', 5, 60, 20, 5, 150],
+  ['gallery/2026/committee-vote', 27, 66, 25, -4, -70],
+  ['gallery/2026/audience', 56, 63, 19, 6, 110],
+  ['gallery/2026/awards-ceremony', 75, 56, 21, -5, -150],
+  ['gallery/2026/guest-visit', 46, 84, 20, 3, 50],
+  ['gallery/2026/german-delegation', 12, 86, 19, -7, -90],
+]
+const caption = (src) => GALLERY.find((g) => g.src === src)
+
+function Archive() {
+  const root = useRef(null)
+  useLayoutEffect(() => {
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      gsap.utils.toArray('[data-print]', root.current).forEach((el) => {
+        gsap.fromTo(el, { y: 0 }, { y: Number(el.dataset.print), ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true } })
+      })
+      gsap.fromTo('[data-thread]', { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top 70%', end: 'bottom 60%', scrub: true } })
+    })
+    return () => mm.revert()
+  }, [])
   return (
-    <section className="on-light bg-paper pb-24 md:pb-40">
-      <div className="wrap grid grid-cols-12 gap-x-4 gap-y-10 md:gap-x-8">
-        <figure className="col-span-12 md:col-span-6">
-          <Photo src="gallery/2026/committee-vote" alt="Delegates raising their placards in a vote" className="aspect-[4/3]" parallax="7" cursor="2026" />
-          <figcaption className="label mt-4 text-muted">2026 — A motion put to the vote</figcaption>
-        </figure>
-        <figure className="col-span-7 md:col-span-3 md:mt-40">
-          <Photo src="gallery/2026/audience" alt="The opening ceremony audience" className="aspect-[3/4]" parallax="10" delay="0.1" cursor="2026" />
-          <figcaption className="label mt-4 text-muted">2026 — Opening ceremony audience</figcaption>
-        </figure>
-        <figure className="col-span-5 mt-16 md:col-span-3 md:mt-12">
-          <Photo src="gallery/2026/awards-ceremony" alt="Delegates with certificates and awards" className="aspect-[3/4]" parallax="6" delay="0.2" cursor="2026" />
-          <figcaption className="label mt-4 text-muted">2026 — Certificates and awards at FMK</figcaption>
-        </figure>
+    <section ref={root} className="on-light relative overflow-hidden bg-paper py-24 text-ink lg:h-[210vh] lg:py-0" aria-labelledby="archive-h">
+      <svg className="pointer-events-none absolute inset-0 hidden h-full w-full lg:block" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path data-thread pathLength="1" strokeDasharray="1" d="M12 8 C 30 14, 40 4, 66 6 S 92 20, 88 28 S 60 40, 40 44 S 8 52, 14 66 S 36 80, 38 74 S 62 60, 64 70 S 90 66, 86 62 S 60 92, 54 92 S 20 96, 20 94" fill="none" stroke="#d4232c" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+      </svg>
+
+      <div className="wrap relative z-10 text-center lg:absolute lg:inset-x-0 lg:top-[36%]">
+        <p className="label text-crimson" data-fade>
+          GPMUN 2025 · BDBC 2026 · BDBC 2027
+        </p>
+        <Lines id="archive-h" className="display t-xl mt-6" lines={['Two Editions.', <span className="serif-it normal-case text-crimson">One Growing</span>, 'Legacy.']} />
+        <div className="mt-10" data-fade>
+          <Btn to="/gallery" kind="line">
+            Open the gallery
+          </Btn>
+        </div>
       </div>
+
+      <ul className="wrap mt-16 grid grid-cols-2 gap-x-4 gap-y-10 lg:static lg:mt-0 lg:block lg:p-0">
+        {PRINTS.map(([src, x, y, w, rot, speed], i) => {
+          const c = caption(src)
+          return (
+            <li
+              key={src}
+              data-print={speed}
+              className={`lg:absolute lg:left-[var(--x)] lg:top-[var(--y)] ${i % 2 ? 'mt-10 lg:mt-0' : ''}`}
+              style={{ '--x': `${x}%`, '--y': `${y}%`, '--w': `${w}vw` }}
+            >
+              <figure className="polaroid lg:w-[var(--w)]" style={{ transform: `rotate(${rot}deg)` }} data-cursor={c?.year}>
+                <img src={img(src, 'sm')} alt={c?.caption || ''} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                <figcaption className="serif-it mt-3 text-[0.95rem] leading-snug text-ink/75">{c?.caption}</figcaption>
+              </figure>
+            </li>
+          )
+        })}
+      </ul>
     </section>
   )
 }
 
 /* ---------- Stats ---------- */
+const STAT_COLOURS = [
+  ['#d4232c', '#ffffff'],
+  ['#ffc927', '#07152b'],
+  ['#5aa9e6', '#07152b'],
+  ['#1b3fc2', '#ffffff'],
+]
 function Stats() {
   return (
-    <section className="on-dark bg-ink text-white">
-      <div className="wrap grid grid-cols-2 lg:grid-cols-4">
-        {STATS.map((s, i) => (
-          <div key={s.label} className={`border-white/15 py-14 md:py-24 ${i % 2 ? 'border-l pl-5 md:pl-10' : ''} ${i > 1 ? 'border-t lg:border-t-0' : ''} ${i === 2 ? 'lg:border-l lg:pl-10' : ''}`}>
-            <p className="display text-[clamp(4rem,10.5vw,11rem)] leading-[0.8]">
+    <section className="grid grid-cols-2 lg:grid-cols-4" aria-label="BDBC in numbers">
+      {STATS.map((s, i) => (
+        <div key={s.label} className="flex min-h-[44vw] flex-col justify-between p-5 md:p-10 lg:min-h-[34vw]" style={{ background: STAT_COLOURS[i][0], color: STAT_COLOURS[i][1] }}>
+          <p className="label opacity-80" data-fade>
+            {s.label}
+          </p>
+          <div>
+            <p className="display text-[clamp(4.2rem,11vw,12rem)] leading-[0.8]">
               <span data-count={s.n}>{s.n}</span>
-              <span className="text-crimson">{s.suffix}</span>
+              {s.suffix}
             </p>
-            <p className="label mt-6" data-fade>
-              {s.label}
-            </p>
-            <p className="mt-2 text-sm text-white/55" data-fade>
+            <p className="serif-it mt-4 text-lg opacity-85 md:text-2xl" data-fade>
               {s.sub}
             </p>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </section>
   )
 }
@@ -207,23 +257,22 @@ function Rooms() {
           </p>
         </div>
         {COMMITTEES.map((c) => (
-          <article key={c.id} className="relative flex w-[88vw] shrink-0 snap-start flex-col border-l border-white/15 lg:h-screen lg:w-[46vw]">
+          <article key={c.id} className="relative flex w-[88vw] shrink-0 snap-start flex-col lg:h-screen lg:w-[46vw]" style={{ background: c.bg, color: c.fg }}>
             <div className="relative h-[42vh] overflow-hidden lg:h-[56%]">
               <img data-room-img src={img(c.img)} alt="" loading="lazy" className="absolute inset-y-0 -left-[10%] h-full w-[120%] max-w-none object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink-2 via-transparent to-ink/30" />
-              <p className="display absolute left-6 top-24 text-[clamp(5rem,11vw,11rem)] leading-none text-white/90 mix-blend-overlay lg:left-10">{c.no}</p>
+              <p className="display absolute bottom-3 left-6 text-[clamp(5rem,11vw,11rem)] leading-[0.8] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,.35)] lg:left-10">{c.no}</p>
             </div>
             <div className="flex flex-1 flex-col px-6 pb-10 pt-6 lg:px-10">
-              <p className="label text-gold">Committee {c.no}</p>
+              <p className="label opacity-75">Committee {c.no}</p>
               <h3 className="display mt-3 text-[clamp(2rem,3.4vw,3.6rem)]">{c.name}</h3>
-              <p className="mt-5 max-w-xl leading-relaxed text-white/75">{c.about}</p>
-              <Link to="/committees" className="label ulink mt-auto self-start pt-6 text-white" data-cursor="Open">
+              <p className="mt-5 max-w-xl leading-relaxed opacity-90">{c.about}</p>
+              <Link to="/committees" className="label ulink mt-auto self-start pt-6" data-cursor="Open">
                 Why apply?
               </Link>
             </div>
           </article>
         ))}
-        <div className="flex w-screen shrink-0 snap-start flex-col justify-center border-l border-white/15 px-[clamp(1.1rem,3.2vw,3.2rem)] py-24 lg:w-[58vw]">
+        <div className="flex w-screen shrink-0 snap-start flex-col justify-center bg-ink px-[clamp(1.1rem,3.2vw,3.2rem)] py-24 lg:w-[58vw]">
           <p className="statement max-w-2xl">Become part of the next generation of global leaders</p>
           <div className="mt-12 flex flex-wrap gap-3">
             <Btn to="/apply" data-cursor="Apply">
@@ -261,7 +310,7 @@ function Discover() {
           ))}
           <div className="pointer-events-none absolute right-[18%] top-1/2 hidden aspect-[4/5] w-[22vw] -translate-y-1/2 overflow-hidden md:block" aria-hidden="true">
             {DISCOVER.map((d, i) => (
-              <img key={d.to} src={img(d.img, d.img.startsWith('gallery') ? 'sm' : undefined)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${hover === i ? 'scale-100 opacity-100' : 'scale-125 opacity-0'}`} style={{ rotate: `${(i - 1) * 3}deg` }} />
+              <img key={d.to} src={img(d.img)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${hover === i ? 'scale-100 opacity-100' : 'scale-125 opacity-0'}`} style={{ rotate: `${(i - 1) * 3}deg` }} />
             ))}
           </div>
         </ul>
@@ -296,8 +345,8 @@ function Awards() {
 /* ---------- Claim your seat ---------- */
 function Seat() {
   return (
-    <section className="on-dark relative overflow-hidden bg-navy text-white">
-      <div className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(ellipse 60% 70% at 75% 40%, rgba(2,79,133,.9), transparent 70%)' }} />
+    <section className="on-dark relative overflow-hidden bg-eu text-white">
+      <div className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(ellipse 60% 70% at 75% 40%, rgba(90,169,230,.55), transparent 70%)' }} />
       <div className="wrap relative grid items-center gap-16 py-28 md:grid-cols-2 md:py-40">
         <div>
           <Eyebrow className="mb-8 text-gold">BDBC 2027</Eyebrow>

@@ -67,22 +67,22 @@ export default function WhyBdbc() {
         </div>
       </section>
 
-      <section className="on-dark bg-navy py-24 text-white md:py-40">
+      <section className="on-light bg-sky py-24 text-ink md:py-40">
         <div className="wrap grid gap-14 md:grid-cols-12">
           <div className="md:col-span-5">
-            <Eyebrow className="mb-8 text-gold">Your first conference?</Eyebrow>
-            <Lines className="display t-xl" lines={['No experience', 'required.', <span className="serif-it text-gold">Seriously.</span>]} />
+            <Eyebrow className="mb-8 text-crimson">Your first conference?</Eyebrow>
+            <Lines className="display t-xl" lines={['No experience', 'required.', <span className="serif-it normal-case text-crimson">Seriously.</span>]} />
           </div>
-          <div className="prose lede text-white/80 md:col-span-6 md:col-start-7">
+          <div className="prose lede text-ink/85 md:col-span-6 md:col-start-7">
             <p data-fade>Many BDBC delegates sit down at their first committee having never attended a conference. Three days later they have spoken in front of a full room, defended a position they received that morning, and written a resolution with delegates from four countries.</p>
             <p data-fade>English is the working language. The rules of procedure take an afternoon to learn, chairs guide you through your first sessions, and every committee has a study guide that tells you exactly what to prepare.</p>
           </div>
         </div>
         <dl className="wrap mt-20 grid gap-x-12 md:grid-cols-2">
           {FIRST.map(([t, d]) => (
-            <div key={t} className="rule py-10" data-fade>
+            <div key={t} className="border-t-2 border-ink py-10" data-fade>
               <dt className="display t-md">{t}</dt>
-              <dd className="mt-5 max-w-xl leading-relaxed text-white/75">{d}</dd>
+              <dd className="mt-5 max-w-xl leading-relaxed text-ink/80">{d}</dd>
             </div>
           ))}
         </dl>

@@ -74,8 +74,8 @@ export default function Recognition() {
       </section>
 
       <section className="on-dark relative isolate overflow-hidden bg-ink py-28 text-white md:py-48">
-        <img src={img('gallery/2026/german-delegation')} alt="The Gymnasium Am Löhrtor delegation with BDBC organisers" data-parallax="8" className="absolute inset-0 -z-10 h-full w-full scale-[1.15] object-cover opacity-40" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
+        <img src={img('gallery/2026/german-delegation')} alt="The Gymnasium Am Löhrtor delegation with BDBC organisers" data-parallax="8" className="absolute inset-0 -z-10 h-full w-full scale-[1.15] object-cover" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink/90 via-ink/55 to-transparent" />
         <div className="wrap">
           <Eyebrow className="mb-8 text-gold">International cooperation</Eyebrow>
           <Lines className="display t-xl" lines={['Belgrade to', 'Siegen —', 'and Beyond']} />

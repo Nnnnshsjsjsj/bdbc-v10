@@ -5,7 +5,7 @@ import { useTitle } from '../lib/util'
 const KIND = {
   Committee: 'bg-navy text-white',
   Ceremony: 'bg-crimson text-white',
-  'Break / Social': 'bg-gold/30 text-ink',
+  'Break / Social': 'bg-sun text-ink',
   Logistics: 'bg-ink/10 text-muted',
 }
 
@@ -33,10 +33,10 @@ export default function Program() {
             <article key={d.title} className="mt-20 grid gap-8 md:mt-28 md:grid-cols-12">
               <header className="md:sticky md:top-28 md:col-span-5 md:self-start">
                 <Eyebrow className="mb-6 text-crimson">{d.tag}</Eyebrow>
-                <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75] text-ink/10" aria-hidden="true">
+                <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75]" style={{ color: ['#d4232c', '#1b3fc2', '#0b7f58'][di] }} aria-hidden="true">
                   0{di + 1}
                 </p>
-                <Lines as="h2" className="display t-md -mt-6 text-ink md:-mt-10" lines={[d.title.split(': ')[0] + ':', d.title.split(': ')[1]]} />
+                <Lines as="h2" className="display t-md mt-4 text-ink" lines={[d.title.split(': ')[0] + ':', d.title.split(': ')[1]]} />
               </header>
               <ol className="md:col-span-7">
                 {d.items.map(([time, what, kind, note]) => (

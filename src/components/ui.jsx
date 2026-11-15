@@ -1,4 +1,5 @@
-import { Link } from '../lib/router'
+import { Link, useRoute } from '../lib/router'
+import { pageColour } from '../lib/data'
 import { img } from '../lib/util'
 
 // Heading whose lines rise into place. Each entry of `lines` is one line; an
@@ -51,26 +52,28 @@ export function Btn({ to, children, kind = 'red', className = '', ...rest }) {
   )
 }
 
-// Hero used by every inner page.
+// Hero used by every inner page: a block of the page's own colour beside a
+// full-brightness photo.
 export function PageHero({ eyebrow, lines, intro, image, children }) {
+  const { path } = useRoute()
+  const { bg, fg } = pageColour(path)
   return (
-    <header className="on-dark relative isolate overflow-hidden bg-ink text-white">
-      {image && (
-        <div className="absolute inset-0 -z-10">
-          <img src={img(image)} alt="" data-parallax="8" className="h-full w-full scale-[1.15] object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/40" />
-        </div>
-      )}
-      <div className="wrap flex min-h-[78svh] flex-col justify-end pb-14 pt-40 md:pb-20">
-        {eyebrow && <Eyebrow className="mb-8 text-gold">{eyebrow}</Eyebrow>}
+    <header className={`relative isolate grid lg:min-h-[92svh] lg:grid-cols-12 ${fg === '#ffffff' ? 'on-dark' : 'on-light'}`} style={{ background: bg, color: fg }}>
+      <div className="flex flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-14 pt-36 lg:col-span-7 lg:pb-20">
+        {eyebrow && <Eyebrow className="mb-8 opacity-80">{eyebrow}</Eyebrow>}
         <Lines as="h1" className="display t-xl" lines={lines} />
         {intro && (
-          <p className="lede mt-10 max-w-3xl text-white/80" data-fade data-delay="0.25">
+          <p className="lede mt-10 max-w-2xl opacity-85" data-fade data-delay="0.25">
             {intro}
           </p>
         )}
         {children}
       </div>
+      {image && (
+        <div className="relative h-[60vh] overflow-hidden lg:col-span-5 lg:h-auto" data-img>
+          <img src={img(image)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        </div>
+      )}
     </header>
   )
 }

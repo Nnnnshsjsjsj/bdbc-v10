@@ -92,15 +92,15 @@ export default function About() {
         </div>
       </section>
 
-      <section className="on-dark bg-navy py-24 text-white md:py-40">
+      <section className="on-light bg-sun py-24 text-ink md:py-40">
         <div className="wrap">
-          <Eyebrow className="mb-8 text-gold">What we stand for</Eyebrow>
+          <Eyebrow className="mb-8 text-ink">What we stand for</Eyebrow>
           <Lines className="display t-xl" lines={['Mission', '& Values']} />
           <dl className="mt-16 grid gap-x-12 md:grid-cols-2">
             {VALUES.map(([t, d]) => (
-              <div key={t} className="rule py-10" data-fade>
+              <div key={t} className="border-t-2 border-ink py-10" data-fade>
                 <dt className="display t-md">{t}</dt>
-                <dd className="lede mt-5 max-w-lg text-white/75">{d}</dd>
+                <dd className="lede mt-5 max-w-lg text-ink/80">{d}</dd>
               </div>
             ))}
           </dl>

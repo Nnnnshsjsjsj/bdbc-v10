@@ -24,12 +24,12 @@ export default function Impact() {
         </div>
       </section>
 
-      <section className="on-dark bg-ink py-24 text-white md:py-40">
+      <section className="on-dark bg-emerald py-24 text-white md:py-40">
         <div className="wrap grid gap-14 md:grid-cols-12">
           <div className="md:col-span-5">
-            <Eyebrow className="mb-8 text-gold">Humanitarian partnership</Eyebrow>
+            <Eyebrow className="mb-8 text-sun">Humanitarian partnership</Eyebrow>
             <Lines className="display t-lg" lines={['Ana and Vlade', 'Divac', 'Foundation']} />
-            <p className="display mt-14 text-[clamp(6rem,15vw,14rem)] leading-[0.78] text-crimson">
+            <p className="display mt-14 text-[clamp(6rem,15vw,14rem)] leading-[0.78] text-sun">
               <span data-count="100">100</span>%
             </p>
             <p className="label mt-4 text-white/60">of the conference proceeds donated</p>
@@ -37,7 +37,7 @@ export default function Impact() {
               <img src={img('partners/foundation_ana_i_vlade_')} alt="Ana and Vlade Divac Foundation" className="w-44" />
             </div>
           </div>
-          <div className="prose lede text-white/80 md:col-span-6 md:col-start-7">
+          <div className="prose lede text-white/90 md:col-span-6 md:col-start-7">
             <p data-fade>At Belgrade Diplomacy &amp; Business Conference (BDBC), we believe that education has the power to transform lives. Guided by our motto, “By Youth, For Youth,” we wanted our impact to extend beyond the conference itself.</p>
             <p data-fade>That is why we donated 100% of the conference proceeds to the Ana and Vlade Divac Foundation, funding a scholarship for a child in need whose financial circumstances make access to education more difficult. Through this contribution, we hope to help create opportunities for a young person to pursue their education and future aspirations.</p>
             <p data-fade>Supporting educational access is a natural extension of our mission and a reminder that leadership is measured not only by what we achieve, but also by the opportunities we create for others.</p>

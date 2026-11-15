@@ -13,6 +13,9 @@ export default function Nav() {
 
   useEffect(() => setOpen(false), [path])
   useEffect(() => {
+    if (open) setHover(Math.max(0, PAGES.findIndex((p) => p[0] === path)))
+  }, [open, path])
+  useEffect(() => {
     const on = () => setSolid(window.scrollY > 40)
     on()
     window.addEventListener('scroll', on, { passive: true })
@@ -40,7 +43,10 @@ export default function Nav() {
 
   return (
     <>
-      <header className={`fixed inset-x-0 top-0 z-[120] text-white transition-[background-color,padding] duration-500 ${solid && !open ? 'bg-ink/85 backdrop-blur-md' : ''}`}>
+      <header
+        className={`fixed inset-x-0 top-0 z-[120] transition-[background-color,color,padding] duration-500 ${solid && !open ? 'bg-ink/85 backdrop-blur-md' : ''} ${open && PAGES[hover][4] !== '#ffffff' ? 'on-light' : 'on-dark'}`}
+        style={{ color: open ? PAGES[hover][4] : '#ffffff' }}
+      >
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:bg-white focus:px-3 focus:py-2 focus:text-ink">
           Skip to content
         </a>
@@ -53,7 +59,7 @@ export default function Nav() {
             <span>Apply Now</span>
             <span className="dot" aria-hidden="true" />
           </Link>
-          <button className="btn btn-line on-dark !py-3 text-white" aria-expanded={open} aria-controls="menu" onClick={() => setOpen((v) => !v)}>
+          <button className="btn btn-line !py-3" aria-expanded={open} aria-controls="menu" onClick={() => setOpen((v) => !v)}>
             <span>{open ? 'Close' : 'Menu'}</span>
             <span className="flex flex-col gap-[3px]" aria-hidden="true">
               <i className={`block h-px w-4 bg-current transition-transform duration-300 ${open ? 'translate-y-[2px] rotate-45' : ''}`} />
@@ -63,14 +69,23 @@ export default function Nav() {
         </nav>
       </header>
 
-      <div id="menu" ref={panel} className="on-dark fixed inset-0 z-[110] hidden overflow-y-auto bg-ink text-white" data-lenis-prevent>
-        <div className="wrap grid min-h-full gap-10 pb-10 pt-28 md:grid-cols-[1.25fr_1fr] md:pt-32">
+      <div
+        id="menu"
+        ref={panel}
+        className="fixed inset-0 z-[110] hidden overflow-y-auto transition-[background-color,color] duration-500"
+        style={{ background: PAGES[hover][3], color: PAGES[hover][4] }}
+        data-lenis-prevent
+      >
+        <div className="wrap grid min-h-full gap-8 pb-8 pt-24 md:grid-cols-[1.25fr_1fr] md:pt-28">
           <ul className="self-center">
             {PAGES.map(([to, label], i) => (
-              <li key={to} className="rule first:border-t-0">
-                <Link to={to} onMouseEnter={() => setHover(i)} onFocus={() => setHover(i)} className="group flex items-baseline gap-5 py-2 md:py-3" aria-current={path === to ? 'page' : undefined}>
-                  <span data-m className="ln display text-[clamp(2.4rem,6.4vw,6rem)]">
-                    <span className={`transition-[color,transform] duration-300 group-hover:translate-x-3 group-hover:text-gold ${path === to ? 'text-gold' : ''}`}>{label}</span>
+              <li key={to} className="border-t border-current/20 first:border-t-0">
+                <Link to={to} onMouseEnter={() => setHover(i)} onFocus={() => setHover(i)} className="group flex items-baseline gap-5 py-1" aria-current={path === to ? 'page' : undefined}>
+                  <span data-m className="ln display text-[min(13vw,7.4svh)] md:text-[min(6.2vw,7.4svh)]">
+                    <span className={`inline-flex items-baseline gap-4 transition-[opacity,transform] duration-300 group-hover:translate-x-3 ${hover === i ? 'opacity-100' : 'opacity-45'}`}>
+                      {label}
+                      {path === to && <span className="serif-it text-[0.45em] normal-case">you are here</span>}
+                    </span>
                   </span>
                 </Link>
               </li>
@@ -79,12 +94,11 @@ export default function Nav() {
           <div className="hidden flex-col md:flex" data-mf>
             <div className="relative flex-1 overflow-hidden">
               {PAGES.map(([to, , src], i) => (
-                <img key={to} src={img(src, src.startsWith('gallery') ? 'sm' : undefined)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${hover === i ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`} />
+                <img key={to} src={img(src)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${hover === i ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`} />
               ))}
-              <div className="absolute inset-0 bg-ink/25" />
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-white/70 md:col-span-2" data-mf>
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm opacity-80 md:col-span-2" data-mf>
             <a className="ulink" href={`mailto:${EVENT.email}`}>
               {EVENT.email}
             </a>

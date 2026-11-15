@@ -1,4 +1,5 @@
 import { Btn, Eyebrow, Lines, PageHero, ApplyBand } from '../components/ui'
+import { Link } from '../lib/router'
 import { COMMITTEES } from '../lib/data'
 import { img, useSeat, useTitle } from '../lib/util'
 
@@ -20,7 +21,7 @@ export default function Committees() {
                   e.preventDefault()
                   const el = document.getElementById(c.id)
                   window.__lenis ? window.__lenis.scrollTo(el) : el.scrollIntoView()
-                }} className="btn btn-line !py-3 text-white">
+                }} className="btn btn-line !py-3">
                 <span>
                   {c.no} {c.short}
                 </span>
@@ -30,40 +31,43 @@ export default function Committees() {
         </ul>
       </PageHero>
 
-      {/* Each committee is its own room: a full-screen panel that the next one slides over. */}
-      <div className="relative bg-ink">
+      {/* Each committee is its own room, in its own colour. Rooms stack: the next slides over the last. */}
+      <div className="relative">
         {COMMITTEES.map((c, i) => (
-          <section key={c.id} id={c.id} className="on-dark relative isolate overflow-hidden bg-ink text-white lg:sticky lg:top-0 lg:h-screen" style={{ zIndex: i + 1 }} aria-labelledby={`${c.id}-h`}>
-            <img src={img(c.img)} alt="" loading="lazy" className="absolute inset-0 -z-10 h-full w-full object-cover opacity-70" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/75 to-ink/20" />
-            <div className="absolute inset-x-0 top-0 h-px bg-white/25" />
-            <div className="wrap grid h-full gap-10 pb-16 pt-28 lg:grid-cols-12 lg:items-end lg:pb-20">
-              <div className="lg:col-span-7">
-                <p className="label text-gold">Committee {c.no}</p>
-                <p className="display mt-2 text-[clamp(7rem,20vw,19rem)] leading-[0.74] text-white/15" aria-hidden="true">
-                  {c.no}
-                </p>
-                <h2 id={`${c.id}-h`} className="display t-lg -mt-[0.5em]">
-                  {c.name}
-                </h2>
+          <section
+            key={c.id}
+            id={c.id}
+            className={`relative grid overflow-hidden lg:sticky lg:top-0 lg:h-screen lg:grid-cols-12 ${c.fg === '#ffffff' ? 'on-dark' : 'on-light'}`}
+            style={{ zIndex: i + 1, background: c.bg, color: c.fg }}
+            aria-labelledby={`${c.id}-h`}
+          >
+            <div className="relative h-[52vh] overflow-hidden lg:order-2 lg:col-span-6 lg:h-full">
+              <img src={img(c.img)} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+              <p className="display absolute bottom-4 right-6 text-[clamp(6rem,14vw,14rem)] leading-[0.8] text-white drop-shadow-[0_8px_30px_rgba(0,0,0,.35)]" aria-hidden="true">
+                {c.no}
+              </p>
+            </div>
+            <div className="flex flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-14 pt-10 lg:col-span-6 lg:pb-16 lg:pt-28">
+              <p className="label opacity-75">Committee {c.no} of 05</p>
+              <h2 id={`${c.id}-h`} className="display t-lg mt-4">
+                {c.name}
+              </h2>
+              <p className="lede mt-8 max-w-2xl">{c.about}</p>
+              <div className="mt-8 max-w-2xl border-l-2 border-current pl-6">
+                <p className="label opacity-75">Why apply?</p>
+                <p className="mt-3 leading-relaxed opacity-90">{c.why}</p>
               </div>
-              <div className="lg:col-span-5">
-                <p className="lede text-white/85">{c.about}</p>
-                <div className="mt-8 border-l-2 border-crimson pl-6">
-                  <p className="label text-gold">Why apply?</p>
-                  <p className="mt-3 leading-relaxed text-white/75">{c.why}</p>
-                </div>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {seat === c.id ? (
-                    <Btn to="/apply" data-cursor="Apply">
-                      Apply with this committee
-                    </Btn>
-                  ) : (
-                    <Btn kind="line" className="text-white" onClick={() => setSeat(c.id)}>
-                      Make it my 1st choice
-                    </Btn>
-                  )}
-                </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {seat === c.id ? (
+                  <Link to="/apply" className="btn bg-ink text-white before:bg-white hover:text-ink" data-cursor="Apply">
+                    <span>Apply with this committee</span>
+                    <span className="dot" aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <Btn kind="line" onClick={() => setSeat(c.id)}>
+                    Make it my 1st choice
+                  </Btn>
+                )}
               </div>
             </div>
           </section>
