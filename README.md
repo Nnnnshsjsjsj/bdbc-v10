@@ -28,11 +28,11 @@ Deploy to a preview URL first, submit one test application, and check the Sheet 
 
 ## Where things are
 
-- `src/lib/data.js` holds all content: committees, people, partners, agenda, gallery, facts. Change numbers here and they change everywhere.
-- `src/components/Dove.jsx` is the logo dove, redrawn in four parts so the wings move.
-- `src/components/Placard.jsx` is the delegate placard that fills in on the home page and the application.
-- `src/components/SeatingPlan.jsx` is the conference floor plan; on phones it becomes a list.
-- `src/components/FogTrophy.jsx` is the trophy in the fog.
+- `src/lib/data.js` holds the site copy, carried over word for word from v9.
+- `src/lib/motion.js` holds the scroll animations (declared in markup with `data-lines`, `data-fade`, `data-img`, `data-words`, `data-count`, `data-parallax`).
+- `src/components/` has the preloader, cursor, full-screen menu, delegate badge and the trophy in the fog.
+- `public/logo.png` is the original logo, untouched, with a round mask.
+- `public/video/belgrade.mp4` is the hero clip (Pexels, free licence: "Aerial View of Belgrade Cityscape at Dusk").
 - `public/img/` holds every photo from v9, converted to WebP.
 
 ## Still to do before launch

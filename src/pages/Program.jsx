@@ -1,56 +1,63 @@
-import PageHeader from '../components/PageHeader'
-import { Link } from '../lib/router'
+import { ApplyBand, Eyebrow, Lines, PageHero } from '../components/ui'
 import { AGENDA } from '../lib/data'
-import { useDocumentTitle } from '../lib/util'
+import { useTitle } from '../lib/util'
 
 const KIND = {
-  committee: { label: 'Committee', cls: 'bg-navy text-white' },
-  ceremony: { label: 'Ceremony', cls: 'bg-crimson text-white' },
-  social: { label: 'Break', cls: 'bg-globe/50 text-ink' },
-  logistics: { label: 'Logistics', cls: 'bg-paper-2 text-muted' },
+  Committee: 'bg-navy text-white',
+  Ceremony: 'bg-crimson text-white',
+  'Break / Social': 'bg-gold/30 text-ink',
+  Logistics: 'bg-ink/10 text-muted',
 }
 
 export default function Program() {
-  useDocumentTitle('Agenda')
+  useTitle('Agenda')
   return (
     <>
-      <PageHeader
-        title="Three days, start to closing gavel."
-        intro="This timetable follows the structure of the BDBC 2026 edition. BDBC 2027 takes place at the end of February 2027. Exact dates and any schedule changes will be announced closer to the conference."
+      <PageHero
+        eyebrow="Conference layout"
+        lines={['The Agenda']}
+        image="gallery/2026/committee-session"
+        intro="Three days of committee sessions, debate, and closing celebration — the same structure that has run every BDBC edition so far."
       />
-      <section className="bg-paper">
-        <div className="mx-auto max-w-[90rem] space-y-20 px-5 py-20 sm:px-8 md:py-28">
-          {AGENDA.map((d) => (
-            <article key={d.day} className="grid gap-8 lg:grid-cols-[16rem_1fr]">
-              <header>
-                <p className="font-display text-5xl text-ink">{d.day}</p>
-                <h2 className="mt-2 text-lg text-muted">{d.title}</h2>
+      <section className="on-light bg-paper py-20 md:py-32">
+        <div className="wrap">
+          <div className="flex flex-wrap items-center gap-3" data-fade>
+            <span className="label mr-2 text-muted">Session legend:</span>
+            {Object.entries(KIND).map(([k, c]) => (
+              <span key={k} className={`label rounded-full px-3 py-2 text-[0.65rem] ${c}`}>
+                {k}
+              </span>
+            ))}
+          </div>
+          {AGENDA.map((d, di) => (
+            <article key={d.title} className="mt-20 grid gap-8 md:mt-28 md:grid-cols-12">
+              <header className="md:sticky md:top-28 md:col-span-5 md:self-start">
+                <Eyebrow className="mb-6 text-crimson">{d.tag}</Eyebrow>
+                <p className="display text-[clamp(6rem,16vw,15rem)] leading-[0.75] text-ink/10" aria-hidden="true">
+                  0{di + 1}
+                </p>
+                <Lines as="h2" className="display t-md -mt-6 text-ink md:-mt-10" lines={[d.title.split(': ')[0] + ':', d.title.split(': ')[1]]} />
               </header>
-              <ol className="divide-y divide-ink/10 border-y border-ink/10">
-                {d.items.map(([from, to, what, kind, note]) => (
-                  <li key={from + what} className="grid grid-cols-[6.5rem_1fr] items-baseline gap-4 py-4 sm:grid-cols-[9rem_1fr_7rem]">
-                    <span className="tabular-nums text-muted">
-                      {from}
-                      {to && `–${to}`}
-                    </span>
+              <ol className="md:col-span-7">
+                {d.items.map(([time, what, kind, note]) => (
+                  <li key={time + what} className="rule grid grid-cols-[7.5rem_1fr] items-baseline gap-4 border-ink/20 py-6 last:border-b md:grid-cols-[10rem_1fr_auto]" data-fade>
+                    <span className="tabular-nums text-muted">{time}</span>
                     <span>
-                      <span className={kind === 'committee' || kind === 'ceremony' ? 'font-semibold text-ink' : ''}>{what}</span>
-                      {note && <span className="mt-1 block text-sm text-muted">{note}</span>}
+                      <span className={`text-xl md:text-2xl ${kind === 'Committee' || kind === 'Ceremony' ? 'font-bold text-ink' : 'text-ink/70'}`}>{what}</span>
+                      {note && <span className="mt-2 block text-muted">{note}</span>}
                     </span>
-                    <span className={`hidden w-fit rounded-[var(--radius-ui)] px-2 py-1 text-xs font-semibold sm:block ${KIND[kind].cls}`}>{KIND[kind].label}</span>
+                    <span className={`label col-start-2 w-fit rounded-full px-3 py-2 text-[0.62rem] md:col-start-3 ${KIND[kind]}`}>{kind}</span>
                   </li>
                 ))}
               </ol>
             </article>
           ))}
-          <div className="flex flex-wrap items-center gap-6 border-t-2 border-ink pt-8">
-            <p className="t-3 text-ink">Secure your place at the table.</p>
-            <Link to="/apply" className="btn btn-apply">
-              Apply for BDBC 2027
-            </Link>
-          </div>
+          <p className="mt-20 max-w-3xl border-l-2 border-crimson pl-6 text-muted" data-fade>
+            This timetable follows the day-by-day structure of the BDBC 2026 edition. BDBC 2027 takes place at the end of February 2027 — exact dates and any schedule changes will be announced closer to the conference.
+          </p>
         </div>
       </section>
+      <ApplyBand title={['Secure your place', 'at the table.']} />
     </>
   )
 }

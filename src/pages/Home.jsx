@@ -1,245 +1,140 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Dove from '../components/Dove'
-import Placard from '../components/Placard'
-import SeatingPlan from '../components/SeatingPlan'
-import FogTrophy from '../components/FogTrophy'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { gsap, ScrollTrigger } from '../lib/motion'
 import { Link } from '../lib/router'
-import { AWARDS, COMMITTEES, EVENT, FACTS, MODULES, PARTNERS } from '../lib/data'
-import { img, JumpLink, useDocumentTitle, usePrefersReducedMotion, useSeat } from '../lib/util'
-
-gsap.registerPlugin(ScrollTrigger)
+import { Btn, Eyebrow, Lines, Marquee, Photo } from '../components/ui'
+import Badge from '../components/Badge'
+import FogTrophy from '../components/FogTrophy'
+import { AWARDS, COMMITTEES, DISCOVER, PARTNERS, STATS } from '../lib/data'
+import { asset, img, useTitle } from '../lib/util'
 
 export default function Home() {
-  useDocumentTitle(null)
+  useTitle(null)
   return (
     <>
       <Hero />
-      <Room />
-      <Seats />
-      <Proof />
+      <Slogan />
+      <Moments />
+      <Stats />
+      <MoreThan />
+      <Rooms />
+      <Discover />
       <Awards />
-      <Impact />
-      <FirstConference />
-      <FinalCall />
+      <Seat />
+      <Sponsors />
     </>
   )
 }
 
-/* ---------- 1. Hero: the dove ---------- */
+/* ---------- Hero ---------- */
 function Hero() {
   const root = useRef(null)
-  const doveWrap = useRef(null)
-  const dove = useRef(null)
-  const reduced = usePrefersReducedMotion()
-
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      if (reduced) return
-      // One entrance: the dove arrives, the headline settles. Under 1.2 s.
-      gsap
-        .timeline({ defaults: { ease: 'power3.out' } })
-        .from(doveWrap.current, { x: '-18vw', y: '22vh', rotate: 12, scale: 0.7, opacity: 0, duration: 1.15 }, 0)
-        .from('[data-hero-line]', { yPercent: 105, duration: 0.8, stagger: 0.08 }, 0.15)
-        .from('[data-hero-fade]', { opacity: 0, duration: 0.6 }, 0.55)
-
-      // Scrolling away: the dove lifts off up and to the right.
-      gsap.to(doveWrap.current, {
-        x: '22vw',
-        y: '-48vh',
-        scale: 0.45,
-        rotate: -8,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: root.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.6,
-          onUpdate: (st) => dove.current?.speed(1 + st.getVelocity() / 900),
-        },
-      })
+      gsap.to('[data-hero-media]', { yPercent: 18, scale: 1.12, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } })
+      gsap.to('[data-hero-copy]', { yPercent: -12, autoAlpha: 0.2, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } })
     }, root)
     return () => ctx.revert()
-  }, [reduced])
-
-  // The dove leans gently toward the pointer.
-  useEffect(() => {
-    if (reduced) return
-    const el = doveWrap.current?.querySelector('[data-lean]')
-    if (!el) return
-    const qx = gsap.quickTo(el, 'x', { duration: 1.2, ease: 'power3.out' })
-    const qy = gsap.quickTo(el, 'y', { duration: 1.2, ease: 'power3.out' })
-    const on = (e) => {
-      qx((e.clientX / window.innerWidth - 0.5) * 40)
-      qy((e.clientY / window.innerHeight - 0.5) * 28)
-    }
-    window.addEventListener('pointermove', on)
-    return () => window.removeEventListener('pointermove', on)
-  }, [reduced])
-
+  }, [])
   return (
-    <section ref={root} className="on-ink relative isolate min-h-[100svh] overflow-hidden bg-ink text-white">
-      {/* globe meridians from the logo */}
-      <svg className="absolute -right-[18vw] top-1/2 -z-10 h-[130vh] w-[130vh] -translate-y-1/2 text-globe opacity-[0.16] md:-right-[8vw]" viewBox="0 0 400 400" aria-hidden="true">
-        <g fill="none" stroke="currentColor" strokeWidth="1">
-          <circle cx="200" cy="200" r="190" />
-          {[40, 80, 120, 160].map((rx) => (
-            <ellipse key={rx} cx="200" cy="200" rx={rx} ry="190" />
-          ))}
-          {[-120, -60, 0, 60, 120].map((dy) => {
-            const w = Math.sqrt(190 * 190 - dy * dy)
-            return <line key={dy} x1={200 - w} x2={200 + w} y1={200 + dy} y2={200 + dy} />
-          })}
-        </g>
-      </svg>
-
-      <div ref={doveWrap} className="pointer-events-none absolute right-[5vw] top-[9svh] w-[48vw] max-w-[40rem] sm:top-[7svh] sm:w-[38vw] lg:right-[-2vw] lg:top-[10vh] lg:w-[44vw]">
-        <div data-lean>
-          <Dove ref={dove} animate={!reduced} stroke="#0c2340" width={7} className="h-auto w-full drop-shadow-[0_30px_50px_rgba(0,0,0,.35)]" />
-        </div>
+    <section ref={root} className="on-dark grain relative isolate h-[100svh] min-h-[660px] overflow-hidden bg-ink text-white">
+      <div data-hero-media className="absolute inset-0 -z-10">
+        <video className="h-full w-full object-cover" autoPlay muted loop playsInline poster={asset('video/belgrade.jpg')} aria-hidden="true">
+          <source src={asset('video/belgrade.mp4')} type="video/mp4" />
+        </video>
       </div>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/55 to-ink/50" />
+      <div className="absolute inset-0 -z-10 bg-navy/35 mix-blend-multiply" />
 
-      <div className="relative mx-auto flex min-h-[100svh] max-w-[90rem] flex-col justify-end px-5 pb-10 pt-28 sm:px-8 lg:justify-center lg:pb-24">
-        <p data-hero-fade className="mb-6 text-white/75">
-          {EVENT.where}, end of February 2027
+      <div data-hero-copy className="wrap flex h-full flex-col justify-end pb-8 pt-28 md:pb-10">
+        <p className="label mb-5 flex items-center gap-3 text-white/85 md:mb-7" data-fade>
+          <span className="h-2 w-2 rounded-full bg-crimson" />
+          Belgrade · End of February 2027
         </p>
-        <h1 className="font-display t-hero">
-          <span className="block overflow-hidden pb-[0.04em]">
-            <span data-hero-line className="block">
-              Lead the debate.
-            </span>
-          </span>
-          <span className="block overflow-hidden pb-[0.06em]">
-            <span data-hero-line className="block">
-              Close the deal.
-            </span>
-          </span>
-        </h1>
-        <p data-hero-fade className="t-lede mt-7 max-w-[34rem] text-white/85">
-          Three days of Model UN committee debate and a business simulation, in one youth conference. Every euro it raises goes to children who need it.
-        </p>
-        <div data-hero-fade className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <Link to="/apply" className="btn btn-apply">
-            Apply for BDBC 2027
-          </Link>
-          <JumpLink to="seats" className="link text-white/90 hover:text-white">
-            See the five committees
-          </JumpLink>
+        <div className="relative">
+          <Lines as="h1" className="display t-mega" lines={['Lead the debate.', 'Close the deal.']} />
+          <p className="script mt-3 text-[2.6rem] md:absolute md:-top-[1.05em] md:right-[6%] md:mt-0 md:-rotate-6 md:text-[clamp(2.2rem,5.2vw,6rem)]" data-fade data-delay="0.7">
+            By Youth, For Youth
+          </p>
         </div>
-        <dl data-hero-fade className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 border-t border-white/15 pt-5 text-sm text-white/70 sm:grid-cols-4">
-          <div>
-            <dt className="sr-only">Edition</dt>
-            <dd>
-              <span className="font-semibold text-white">Third</span> edition
-            </dd>
+        <div className="rule mt-8 grid gap-6 pt-6 md:mt-10 md:grid-cols-[1.3fr_1fr_auto] md:items-end md:gap-12">
+          <p className="max-w-xl text-[1.05rem] leading-relaxed text-white/85" data-fade data-delay="0.35">
+            One of Europe’s first conferences uniting Model UN diplomacy with a real-world business simulation — three days of debate, negotiation, and ideas in the heart of Belgrade.
+          </p>
+          <p className="max-w-sm text-sm leading-relaxed text-white/70" data-fade data-delay="0.45">
+            <strong className="font-semibold text-gold">A fully humanitarian conference</strong> — 100% of the proceeds go to children who need them most.
+          </p>
+          <div className="flex flex-wrap gap-3" data-fade data-delay="0.55">
+            <Btn to="/apply" data-cursor="Apply">
+              Apply for BDBC 2027
+            </Btn>
+            <Btn to="/about" kind="line">
+              Learn more
+            </Btn>
           </div>
-          <div>
-            <dt className="sr-only">Committees</dt>
-            <dd>
-              <span className="font-semibold text-white">{FACTS.committees}</span> committees
-            </dd>
-          </div>
-          <div>
-            <dt className="sr-only">Applicants</dt>
-            <dd>
-              <span className="font-semibold text-white">{FACTS.applicants}</span> applicants so far
-            </dd>
-          </div>
-          <div>
-            <dt className="sr-only">Nationalities</dt>
-            <dd>
-              <span className="font-semibold text-white">{FACTS.nationalities}</span> nationalities
-            </dd>
-          </div>
-        </dl>
+        </div>
       </div>
     </section>
   )
 }
 
-/* ---------- 2. The room: the placard fills in as you scroll ---------- */
-const STEPS = [
-  {
-    title: 'Two simulations under one roof.',
-    body: `${MODULES[0].name}: you represent a country and argue its position until a resolution passes. ${MODULES[1].name}: you run a company through crises with an executive team. Both happen in the same three days.`,
-  },
-  {
-    title: 'Five committees to choose from.',
-    body: 'Security Crisis, Business, ECOSOC, ASEAN and the Model European Council. You rank three when you apply.',
-  },
-  {
-    title: 'A country to speak for.',
-    body: 'You name five countries you would like to represent in each committee. The chairs assign one, and its policy becomes yours for the weekend.',
-  },
-  {
-    title: 'Then the card has your name on it.',
-    body: 'English is the working language, the rules of procedure take an afternoon to learn, and no experience is needed.',
-  },
-]
-
-function Room() {
-  const { seat } = useSeat()
-  const reduced = usePrefersReducedMotion()
-  const [step, setStep] = useState(0)
-  const [ci, setCi] = useState(0)
-  const refs = useRef([])
-
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setStep(Number(e.target.dataset.step))),
-      { rootMargin: '-45% 0px -45% 0px' },
-    )
-    refs.current.forEach((el) => el && io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
-  const committee = COMMITTEES.find((c) => c.id === seat) || COMMITTEES[2]
-
-  // On the country step the placard cycles through a few delegations.
-  useEffect(() => {
-    if (step !== 2 || reduced) return
-    const t = setInterval(() => setCi((i) => (i + 1) % committee.sample.length), 1100)
-    return () => clearInterval(t)
-  }, [step, reduced, committee])
-
+/* ---------- Slogan band ---------- */
+function Slogan() {
+  const item = (
+    <span className="flex items-center">
+      <span className="display px-[0.25em] text-[clamp(3rem,9vw,9rem)]">By Youth</span>
+      <span className="serif-it px-[0.2em] text-[clamp(3rem,9vw,9rem)] leading-none text-crimson">for youth</span>
+      <img src={asset('logo.png')} alt="" className="mx-[2vw] h-[clamp(2.6rem,7vw,7rem)] w-auto" />
+    </span>
+  )
   return (
-    <section className="on-ink relative bg-ink text-white" aria-labelledby="room-h">
-      <h2 id="room-h" className="sr-only">
-        How BDBC works
-      </h2>
-      <div className="sticky top-0 h-[100svh] overflow-hidden">
-        <img src={img('gallery/2026/committee-vote')} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/30" />
-        <div className="absolute inset-x-0 top-20 flex justify-center px-6 md:inset-y-0 md:left-auto md:right-[6vw] md:top-0 md:w-[44vw] md:items-center">
-          <Placard
-            className="w-[min(64vw,20rem)] md:w-full md:max-w-[26rem]"
-            committee={step >= 1 ? committee.placard : null}
-            country={step >= 2 ? committee.sample[step === 2 ? ci : 0] : null}
-            name={step >= 3 ? 'Your name' : null}
-          />
-        </div>
+    <section className="on-light overflow-hidden bg-paper py-10 text-ink md:py-16" aria-label="By Youth, For Youth">
+      <Marquee dur={28}>
+        {item}
+        {item}
+      </Marquee>
+    </section>
+  )
+}
+
+/* ---------- Three moments ---------- */
+function Moments() {
+  return (
+    <section className="on-light bg-paper pb-24 md:pb-40">
+      <div className="wrap grid grid-cols-12 gap-x-4 gap-y-10 md:gap-x-8">
+        <figure className="col-span-12 md:col-span-6">
+          <Photo src="gallery/2026/committee-vote" alt="Delegates raising their placards in a vote" className="aspect-[4/3]" parallax="7" cursor="2026" />
+          <figcaption className="label mt-4 text-muted">2026 — A motion put to the vote</figcaption>
+        </figure>
+        <figure className="col-span-7 md:col-span-3 md:mt-40">
+          <Photo src="gallery/2026/audience" alt="The opening ceremony audience" className="aspect-[3/4]" parallax="10" delay="0.1" cursor="2026" />
+          <figcaption className="label mt-4 text-muted">2026 — Opening ceremony audience</figcaption>
+        </figure>
+        <figure className="col-span-5 mt-16 md:col-span-3 md:mt-12">
+          <Photo src="gallery/2026/awards-ceremony" alt="Delegates with certificates and awards" className="aspect-[3/4]" parallax="6" delay="0.2" cursor="2026" />
+          <figcaption className="label mt-4 text-muted">2026 — Certificates and awards at FMK</figcaption>
+        </figure>
       </div>
-      <div className="relative -mt-[100svh]">
-        {STEPS.map((s, i) => (
-          <div
-            key={s.title}
-            ref={(el) => (refs.current[i] = el)}
-            data-step={i}
-            className="mx-auto flex min-h-[100svh] max-w-[90rem] items-end px-5 pb-16 sm:px-8 md:items-center md:pb-0"
-          >
-            <div className="max-w-xl bg-ink/85 p-5 md:bg-transparent md:p-0">
-              <p className="font-display text-sm text-white/55">
-                {i + 1} of {STEPS.length}
-              </p>
-              <h3 className="font-display t-1 mt-3">{s.title}</h3>
-              <p className="t-lede mt-6 text-white/80">{s.body}</p>
-              {i === STEPS.length - 1 && (
-                <JumpLink to="seats" className="btn btn-quiet mt-8 text-white">
-                  Choose your committee
-                </JumpLink>
-              )}
-            </div>
+    </section>
+  )
+}
+
+/* ---------- Stats ---------- */
+function Stats() {
+  return (
+    <section className="on-dark bg-ink text-white">
+      <div className="wrap grid grid-cols-2 lg:grid-cols-4">
+        {STATS.map((s, i) => (
+          <div key={s.label} className={`border-white/15 py-14 md:py-24 ${i % 2 ? 'border-l pl-5 md:pl-10' : ''} ${i > 1 ? 'border-t lg:border-t-0' : ''} ${i === 2 ? 'lg:border-l lg:pl-10' : ''}`}>
+            <p className="display text-[clamp(4rem,10.5vw,11rem)] leading-[0.8]">
+              <span data-count={s.n}>{s.n}</span>
+              <span className="text-crimson">{s.suffix}</span>
+            </p>
+            <p className="label mt-6" data-fade>
+              {s.label}
+            </p>
+            <p className="mt-2 text-sm text-white/55" data-fade>
+              {s.sub}
+            </p>
           </div>
         ))}
       </div>
@@ -247,56 +142,31 @@ function Room() {
   )
 }
 
-/* ---------- 3. Pick your seat ---------- */
-function Seats() {
-  const { seat, setSeat } = useSeat()
-  const [focused, setFocused] = useState(null)
-  const shown = COMMITTEES.find((c) => c.id === (focused || seat)) || null
-
+/* ---------- More than a conference ---------- */
+function MoreThan() {
   return (
-    <section id="seats" className="scroll-mt-16 bg-paper" aria-labelledby="seats-h">
-      <div className="mx-auto max-w-[90rem] px-5 py-24 sm:px-8 md:py-32">
-        <div className="grid gap-6 md:grid-cols-[1fr_1fr] md:items-end">
-          <h2 id="seats-h" className="font-display t-1 text-ink">
-            Take a seat.
-          </h2>
-          <p className="t-lede measure text-muted">
-            This is the conference floor. Each table is a committee. Choose one to read what happens there, and it will be filled in on your placard and your application.
-          </p>
+    <section className="on-light bg-paper py-28 md:py-48">
+      <div className="wrap grid gap-12 md:grid-cols-12">
+        <div className="md:col-span-3">
+          <Eyebrow className="text-crimson">More than a conference</Eyebrow>
         </div>
-
-        <div className="mt-14 grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-          <div className="text-navy">
-            <SeatingPlan selected={seat} onSelect={setSeat} focused={focused} onFocus={setFocused} />
-          </div>
-          <div aria-live="polite" className="lg:pt-6">
-            {shown ? (
-              <article>
-                <p className="text-sm font-semibold text-sea">{shown.kind} committee</p>
-                <h3 className="font-display t-2 mt-2 text-ink">{shown.name}</h3>
-                <p className="mt-5 text-[1.05rem] leading-relaxed">{shown.about}</p>
-                <p className="mt-4 leading-relaxed text-muted">{shown.why}</p>
-                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-                  {seat === shown.id ? (
-                    <Link to="/apply" className="btn btn-apply">
-                      Apply with {shown.placard}
-                    </Link>
-                  ) : (
-                    <button className="btn btn-quiet text-ink" onClick={() => setSeat(shown.id)}>
-                      Choose this committee
-                    </button>
-                  )}
-                  <Link to="/committees" className="link text-ink">
-                    All committee details
-                  </Link>
-                </div>
-              </article>
-            ) : (
-              <div className="border-l-2 border-ink/15 pl-6">
-                <p className="t-3 text-ink">Choose a table on the plan.</p>
-                <p className="mt-3 text-muted">You can also move between tables with the Tab key and press Enter to choose.</p>
-              </div>
-            )}
+        <div className="md:col-span-9">
+          <Lines
+            className="statement text-ink"
+            lines={[
+              <>
+                <span className="serif-it">“By Youth, For Youth”</span> —
+              </>,
+              'in the most literal sense.',
+            ]}
+          />
+          <p className="statement mt-12 text-ink" data-words>
+            BDBC doesn’t just educate — it acts. 100% of the conference proceeds fund a scholarship through the Ana and Vlade Divac Foundation, and roughly 300 kg of surplus food went to the Zvečanska children’s centre. Every edition gives everything back.
+          </p>
+          <div className="mt-14" data-fade>
+            <Btn to="/impact" kind="line" className="text-ink">
+              See our impact
+            </Btn>
           </div>
         </div>
       </div>
@@ -304,164 +174,166 @@ function Seats() {
   )
 }
 
-/* ---------- 4. Proof ---------- */
-function Proof() {
+/* ---------- Five committees, five rooms ---------- */
+function Rooms() {
+  const section = useRef(null)
+  const track = useRef(null)
+  useLayoutEffect(() => {
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      const dist = () => track.current.scrollWidth - window.innerWidth
+      const tween = gsap.to(track.current, {
+        x: () => -dist(),
+        ease: 'none',
+        scrollTrigger: { trigger: section.current, start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.7, invalidateOnRefresh: true, anticipatePin: 1 },
+      })
+      gsap.utils.toArray('[data-room-img]', track.current).forEach((el) => {
+        gsap.fromTo(el, { xPercent: -8 }, { xPercent: 8, ease: 'none', scrollTrigger: { trigger: el.parentElement, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } })
+      })
+    })
+    return () => mm.revert()
+  }, [])
   return (
-    <section className="on-ink relative isolate overflow-hidden bg-ink text-white" aria-labelledby="proof-h">
-      <h2 id="proof-h" className="sr-only">
-        Recognition
-      </h2>
-      <img src={img('gallery/2026/guest-visit')} alt="H.E. Florence Ferrari, Ambassador of France to Serbia, with the BDBC 2026 organisers" className="absolute inset-0 -z-10 h-full w-full object-cover object-[50%_30%] opacity-45" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-ink/20" />
-      <div className="mx-auto max-w-[90rem] px-5 pb-20 pt-[38vh] sm:px-8 md:pb-28">
-        <blockquote className="max-w-4xl">
-          <p className="font-serif text-[clamp(1.7rem,1.1rem+2.4vw,3.3rem)] leading-[1.15] italic">
-            “I was impressed by the dedication and the professionalism of the organisers as well as the enthusiasm of all participants.”
+    <section ref={section} className="on-dark overflow-hidden bg-ink-2 text-white" aria-labelledby="rooms-h">
+      <div ref={track} className="flex snap-x snap-mandatory overflow-x-auto lg:h-screen lg:w-max lg:snap-none lg:overflow-visible">
+        <div className="flex w-screen shrink-0 snap-start flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-14 pt-32 lg:w-[62vw]">
+          <Eyebrow className="mb-8 text-gold">Five committees · One conference</Eyebrow>
+          <Lines id="rooms-h" className="display t-xl" lines={['Committees', 'at BDBC 2027']} />
+          <p className="lede mt-8 max-w-xl text-white/75" data-fade>
+            At BDBC 2027, delegates will step into five dynamic committees, each designed to challenge their diplomatic, analytical, and strategic skills while offering real-world insights into global affairs.
           </p>
-          <footer className="mt-6 text-white/80">
-            H.E. Florence Ferrari, Ambassador of France to Serbia, who opened BDBC 2026 in person
-          </footer>
-        </blockquote>
-        <p className="mt-14 max-w-2xl border-t border-white/20 pt-6 text-white/75">
-          The German Embassy in Serbia featured BDBC for hosting a delegation of students and their professor from Gymnasium Am Löhrtor in Siegen.{' '}
-          <Link to="/about" className="link text-white">
-            Read about our recognition
-          </Link>
-        </p>
+          <p className="label mt-10 hidden items-center gap-3 text-white/50 lg:flex" data-fade>
+            Scroll <span className="inline-block h-px w-16 bg-current" /> every committee has its own room
+          </p>
+        </div>
+        {COMMITTEES.map((c) => (
+          <article key={c.id} className="relative flex w-[88vw] shrink-0 snap-start flex-col border-l border-white/15 lg:h-screen lg:w-[46vw]">
+            <div className="relative h-[42vh] overflow-hidden lg:h-[56%]">
+              <img data-room-img src={img(c.img)} alt="" loading="lazy" className="absolute inset-y-0 -left-[10%] h-full w-[120%] max-w-none object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-2 via-transparent to-ink/30" />
+              <p className="display absolute left-6 top-24 text-[clamp(5rem,11vw,11rem)] leading-none text-white/90 mix-blend-overlay lg:left-10">{c.no}</p>
+            </div>
+            <div className="flex flex-1 flex-col px-6 pb-10 pt-6 lg:px-10">
+              <p className="label text-gold">Committee {c.no}</p>
+              <h3 className="display mt-3 text-[clamp(2rem,3.4vw,3.6rem)]">{c.name}</h3>
+              <p className="mt-5 max-w-xl leading-relaxed text-white/75">{c.about}</p>
+              <Link to="/committees" className="label ulink mt-auto self-start pt-6 text-white" data-cursor="Open">
+                Why apply?
+              </Link>
+            </div>
+          </article>
+        ))}
+        <div className="flex w-screen shrink-0 snap-start flex-col justify-center border-l border-white/15 px-[clamp(1.1rem,3.2vw,3.2rem)] py-24 lg:w-[58vw]">
+          <p className="statement max-w-2xl">Become part of the next generation of global leaders</p>
+          <div className="mt-12 flex flex-wrap gap-3">
+            <Btn to="/apply" data-cursor="Apply">
+              Apply Now
+            </Btn>
+            <Btn to="/committees" kind="line">
+              All committees
+            </Btn>
+          </div>
+        </div>
       </div>
-      <div className="bg-paper text-ink">
-        <div className="mx-auto max-w-[90rem] px-5 py-12 sm:px-8">
-          <h3 className="text-sm font-semibold text-muted">Sponsors and partners of BDBC 2026</h3>
-          <ul className="mt-6 grid grid-cols-3 items-center gap-x-8 gap-y-6 sm:grid-cols-5 lg:grid-cols-10">
-            {PARTNERS.map((p) => (
-              <li key={p.name} className="flex justify-center">
-                <img src={img(p.logo)} alt={p.name} title={`${p.name}, ${p.role}`} className="h-12 w-auto max-w-[7rem] object-contain mix-blend-multiply" loading="lazy" />
-              </li>
+    </section>
+  )
+}
+
+/* ---------- Discover ---------- */
+function Discover() {
+  const [hover, setHover] = useState(null)
+  return (
+    <section className="on-light bg-paper py-28 md:py-44">
+      <div className="wrap">
+        <div className="grid gap-8 md:grid-cols-12">
+          <Eyebrow className="text-crimson md:col-span-3">Discover BDBC</Eyebrow>
+          <Lines className="display t-lg text-ink md:col-span-9" lines={['Everything You', 'Need to Know']} />
+        </div>
+        <ul className="relative mt-16 md:mt-24">
+          {DISCOVER.map((d, i) => (
+            <li key={d.to} className="rule border-ink/20 last:border-b last:border-ink/20" data-fade>
+              <Link to={d.to} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} className="group relative grid items-center gap-4 py-8 transition-colors duration-500 hover:text-crimson md:grid-cols-12 md:py-12" data-cursor="Open">
+                <h3 className="display text-[clamp(2rem,5vw,5.2rem)] transition-transform duration-500 group-hover:translate-x-4 md:col-span-7">{d.title}</h3>
+                <p className="max-w-sm text-muted md:col-span-3">{d.text}</p>
+                <span className="label md:col-span-2 md:justify-self-end">Learn more →</span>
+              </Link>
+            </li>
+          ))}
+          <div className="pointer-events-none absolute right-[18%] top-1/2 hidden aspect-[4/5] w-[22vw] -translate-y-1/2 overflow-hidden md:block" aria-hidden="true">
+            {DISCOVER.map((d, i) => (
+              <img key={d.to} src={img(d.img, d.img.startsWith('gallery') ? 'sm' : undefined)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${hover === i ? 'scale-100 opacity-100' : 'scale-125 opacity-0'}`} style={{ rotate: `${(i - 1) * 3}deg` }} />
             ))}
-          </ul>
-        </div>
+          </div>
+        </ul>
       </div>
     </section>
   )
 }
 
-/* ---------- 5. Awards and the trophy in the fog ---------- */
+/* ---------- Awards ---------- */
 function Awards() {
   return (
-    <section className="on-ink bg-[#0a1c33] text-white" aria-labelledby="awards-h">
-      <div className="mx-auto grid max-w-[90rem] items-center gap-12 px-5 py-24 sm:px-8 md:grid-cols-2 md:py-32">
-        <FogTrophy />
-        <div>
-          <h2 id="awards-h" className="font-display t-1">
-            Three awards. The trophy stays hidden until February.
-          </h2>
-          <p className="t-lede mt-6 max-w-lg text-white/80">
-            Chairs recognise the strongest delegates in each committee. Every delegate leaves with a certificate of participation.
-          </p>
-          <ul className="mt-10 divide-y divide-white/15 border-y border-white/15">
-            {AWARDS.map((a) => (
-              <li key={a} className="font-display-wide py-4 text-[1.35rem] text-brass">
-                {a}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 text-sm text-white/55">Move your pointer over the fog. It will not tell you much.</p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ---------- 6. Where the money goes ---------- */
-function Impact() {
-  return (
-    <section className="bg-paper" aria-labelledby="impact-h">
-      <div className="mx-auto max-w-[90rem] px-5 py-24 sm:px-8 md:py-32">
-        <h2 id="impact-h" className="font-display t-1 max-w-3xl text-ink">
-          Where your fee goes.
-        </h2>
-        <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_1fr_1.1fr]">
-          <div>
-            <p className="font-display text-[clamp(4rem,3rem+5vw,8rem)] leading-none text-ink">100%</p>
-            <p className="mt-4 max-w-sm text-lg leading-relaxed">
-              of the 2026 proceeds funded a scholarship through the Ana and Vlade Divac Foundation for a child whose family could not otherwise afford their education.
-            </p>
-          </div>
-          <div>
-            <p className="font-display text-[clamp(4rem,3rem+5vw,8rem)] leading-none text-ink">
-              {FACTS.foodKg}
-              <span className="text-[0.45em]"> kg</span>
-            </p>
-            <p className="mt-4 max-w-sm text-lg leading-relaxed">of surplus food, approximately, went to the Zvečanska Centre for the Protection of Infants, Children and Youth after the conference.</p>
-          </div>
-          <figure>
-            <img src={img('impact/donation-sorting')} alt="Boxes of donated food stacked for the Zvečanska centre" className="aspect-[4/3] w-full object-cover" loading="lazy" />
-            <figcaption className="mt-3 text-sm text-muted">The food donation, ready to leave for Zvečanska.</figcaption>
-          </figure>
-        </div>
-        <Link to="/impact" className="link mt-12 inline-block text-ink">
-          Read the full impact report
-        </Link>
-      </div>
-    </section>
-  )
-}
-
-/* ---------- 7. First conference ---------- */
-const FIRST = [
-  ['Universities read it', 'Admissions officers skim thousands of near-identical applications. “Represented Japan at an international conference in Belgrade” stands out, and you can talk about it in an interview for ten minutes without running out of material.'],
-  ['Skills school never grades', 'Public speaking in English. Negotiating with someone who wants the opposite of what you want. Holding a room’s attention. A committee demands all three in one weekend.'],
-  ['A network across borders', `Delegates come from ${FACTS.nationalities} nationalities. The person seated next to you might study law in Vienna or run a student business in Skopje.`],
-  ['Proof you can show', 'Every delegate receives a participation certificate. Chairs award Best Delegate, Best Speaker and Honourable Mention in each committee.'],
-]
-
-function FirstConference() {
-  return (
-    <section className="bg-paper-2" aria-labelledby="first-h">
-      <div className="mx-auto grid max-w-[90rem] gap-14 px-5 py-24 sm:px-8 md:py-32 lg:grid-cols-[1fr_1.4fr]">
-        <div>
-          <h2 id="first-h" className="font-display t-1 text-ink">
-            First conference? You will be fine.
-          </h2>
-          <p className="t-lede mt-6 max-w-md text-muted">
-            Many BDBC delegates sit down at their first committee having never attended a conference. Three days later they have spoken in front of a full room and written a resolution with delegates from four countries.
-          </p>
-        </div>
-        <dl className="grid gap-x-12 gap-y-10 sm:grid-cols-2">
-          {FIRST.map(([t, d]) => (
-            <div key={t} className="border-t-2 border-ink pt-4">
-              <dt className="t-3 font-semibold text-ink">{t}</dt>
-              <dd className="mt-3 leading-relaxed text-text/85">{d}</dd>
-            </div>
+    <section className="on-dark grid bg-ink text-white lg:grid-cols-2">
+      <FogTrophy />
+      <div className="flex flex-col justify-center px-[clamp(1.1rem,3.2vw,3.2rem)] py-24 lg:py-32">
+        <Eyebrow className="mb-8 text-gold">Awards</Eyebrow>
+        <Lines className="display t-lg" lines={['A trophy still', 'in the fog.']} />
+        <p className="lede mt-8 max-w-lg text-white/75" data-fade>
+          The BDBC 2027 trophy has not been revealed yet. What we can tell you is who takes one home in every committee.
+        </p>
+        <ul className="mt-12">
+          {AWARDS.map((a) => (
+            <li key={a} className="rule flex items-baseline justify-between py-5 last:border-b last:border-white/15" data-fade>
+              <span className="display text-[clamp(1.8rem,3.2vw,3.2rem)] text-gold">{a}</span>
+            </li>
           ))}
-        </dl>
+        </ul>
       </div>
     </section>
   )
 }
 
-/* ---------- 8. Final call ---------- */
-function FinalCall() {
-  const { seat } = useSeat()
-  const c = COMMITTEES.find((x) => x.id === seat)
+/* ---------- Claim your seat ---------- */
+function Seat() {
   return (
-    <section className="on-ink overflow-hidden bg-ink text-white" aria-labelledby="final-h">
-      <div className="mx-auto grid max-w-[90rem] items-center gap-14 px-5 py-24 sm:px-8 md:grid-cols-[1.1fr_1fr] md:py-32">
+    <section className="on-dark relative overflow-hidden bg-navy text-white">
+      <div className="absolute inset-0 opacity-60" style={{ background: 'radial-gradient(ellipse 60% 70% at 75% 40%, rgba(2,79,133,.9), transparent 70%)' }} />
+      <div className="wrap relative grid items-center gap-16 py-28 md:grid-cols-2 md:py-40">
         <div>
-          <h2 id="final-h" className="font-display t-1">
-            Your seat is waiting.
-          </h2>
-          <p className="t-lede mt-6 max-w-lg text-white/80">
-            Applications for {EVENT.edition} are open. Pay €{EVENT.feeTransfer} by bank transfer after you apply, or €{EVENT.feeCash} in cash on the first day.
+          <Eyebrow className="mb-8 text-gold">BDBC 2027</Eyebrow>
+          <Lines className="display t-xl" lines={['Claim', 'Your Seat.']} />
+          <p className="lede mt-8 max-w-md text-white/80" data-fade>
+            Complete the application and confirm your place with payment. Spots are limited.
           </p>
-          <Link to="/apply" className="btn btn-apply mt-9">
-            {c ? `Apply for ${c.placard}` : 'Apply for BDBC 2027'}
-          </Link>
+          <div className="mt-10 flex flex-wrap gap-3" data-fade>
+            <Btn to="/apply" data-cursor="Apply">
+              Apply for BDBC 2027
+            </Btn>
+            <Btn to="/why-bdbc" kind="line">
+              Why BDBC
+            </Btn>
+          </div>
         </div>
-        <div className="flex justify-center md:justify-end">
-          <Placard className="w-[min(80vw,24rem)]" committee={c?.placard} country={null} name="Your name" />
-        </div>
+        <Badge className="pt-24 md:pt-10" />
       </div>
+    </section>
+  )
+}
+
+/* ---------- Sponsors ---------- */
+function Sponsors() {
+  const eight = PARTNERS.slice(0, 8)
+  return (
+    <section className="on-light bg-paper-2 py-16 md:py-20">
+      <p className="label mb-10 text-center text-crimson">Sponsors &amp; Partners</p>
+      <Marquee dur={45}>
+        {eight.map((p) => (
+          <span key={p.name} className="mx-3 flex shrink-0 items-center gap-4 bg-white px-6 py-4">
+            <img src={img(p.logo)} alt="" className="h-10 w-10 object-contain" />
+            <span className="whitespace-nowrap font-medium text-ink">{p.name}</span>
+          </span>
+        ))}
+      </Marquee>
     </section>
   )
 }

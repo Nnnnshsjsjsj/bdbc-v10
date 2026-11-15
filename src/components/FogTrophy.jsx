@@ -13,14 +13,14 @@ export default function FogTrophy() {
     <div
       ref={box}
       onPointerMove={move}
-      className="relative isolate aspect-[4/5] w-full overflow-hidden bg-[#0a1c33] sm:aspect-[5/6]"
+      className="relative isolate h-full min-h-[70vh] w-full overflow-hidden bg-ink"
       role="img"
       aria-label="A trophy hidden in fog. The 2027 design has not been revealed."
     >
       {/* back light */}
       <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 45% 40% at 50% 46%, rgba(176,138,67,.22), transparent 70%)' }} />
       {/* the trophy, deliberately soft */}
-      <svg viewBox="0 0 300 400" className="absolute left-1/2 top-[12%] h-[72%] -translate-x-1/2" style={{ filter: 'blur(9px) brightness(.8)' }} aria-hidden="true">
+      <svg viewBox="0 0 300 400" className="absolute left-1/2 top-[14%] h-[68%] -translate-x-1/2" style={{ filter: 'blur(9px) brightness(.8)' }} aria-hidden="true">
         <defs>
           <linearGradient id="brass" x1="0" x2="1">
             <stop offset="0" stopColor="#5b4520" />
@@ -40,8 +40,10 @@ export default function FogTrophy() {
       </svg>
       <div className="fog-layer fog-b" />
       <div className="fog-layer fog-a" />
-      <div className="fog-layer fog-c" />
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0a1c33] to-transparent" />
+      <div className="fog-hole absolute inset-0 overflow-hidden">
+        <div className="fog-layer fog-c" />
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />
     </div>
   )
 }

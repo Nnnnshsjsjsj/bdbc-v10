@@ -1,113 +1,113 @@
-// All site content in one place. Text carried over from bdbc-v9 unless noted.
+// All site copy. Carried over word for word from bdbconference.com (v9).
 
 export const EVENT = {
-  name: 'Belgrade Diplomacy & Business Conference',
-  short: 'BDBC',
-  edition: 'BDBC 2027',
-  when: 'End of February 2027',
-  where: 'Belgrade',
   email: 'bdbcofficial@gmail.com',
   instagram: 'https://instagram.com/bdbc_official',
   tiktok: 'https://tiktok.com/@bdbc_official',
   handle: '@bdbc_official',
-  feeTransfer: 45,
-  feeCash: 50,
 }
 
-// One set of numbers, used on every page.
-export const FACTS = {
-  editions: 3, // GPMUN 2025, BDBC 2026, BDBC 2027
-  applicants: '220+',
-  nationalities: '35+',
-  committees: 5,
-  foodKg: 300,
-}
+export const PAGES = [
+  ['/', 'Home', 'gallery/2026/committee-vote'],
+  ['/about', 'About', 'gallery/2026/audience'],
+  ['/program', 'Agenda', 'gallery/2026/committee-session'],
+  ['/committees', 'Committees', 'gallery/2025/crisis-simulation'],
+  ['/impact', 'Impact', 'impact/donation-sorting'],
+  ['/recognition', 'Recognition', 'gallery/2026/guest-visit'],
+  ['/why-bdbc', 'Why BDBC', 'gallery/2026/delegate-speaking'],
+  ['/gallery', 'Gallery', 'gallery/2025/flag-tradition'],
+  ['/contact', 'Contact', 'gallery/2026/networking'],
+]
+
+export const STATS = [
+  { n: 3, suffix: '', label: 'Editions', sub: '2025 · 2026 · 2027' },
+  { n: 220, suffix: '+', label: 'Applicants', sub: 'and growing' },
+  { n: 35, suffix: '+', label: 'Nationalities', sub: 'among delegates' },
+  { n: 5, suffix: '', label: 'Committees', sub: 'per year' },
+]
+
+export const DISCOVER = [
+  { to: '/program', title: 'Conference Agenda', text: 'A full agenda of debates, workshops, business sessions, and a closing gala ceremony.', img: 'gallery/2026/committee-session' },
+  { to: '/impact', title: 'Humanitarian Impact', text: 'From food donations to scholarship partnerships — BDBC gives back to the community.', img: 'impact/donation-sorting' },
+  { to: '/why-bdbc', title: 'Why Choose BDBC', text: 'Skills, networks, certificates, and real-world exposure across two powerful modules.', img: 'gallery/2026/delegate-speaking' },
+]
 
 export const AWARDS = ['Best Delegate', 'Best Speaker', 'Honourable Mention']
 
 export const COMMITTEES = [
   {
     id: 'security-crisis',
+    no: '01',
     name: 'Security Crisis Committee',
-    placard: 'Security Crisis',
+    short: 'Security Crisis',
     formValue: 'Security Crisis Committee',
-    kind: 'Crisis',
+    img: 'gallery/2025/crisis-simulation',
     about:
       'A high-intensity, fast-paced committee where delegates represent national leaders and security advisors responding to global crises. From geopolitical tensions to humanitarian emergencies, you’ll negotiate in real time, draft emergency directives, and shape outcomes that affect entire regions.',
     why: 'Perfect for those who enjoy strategic thinking under pressure. You’ll develop rapid decision-making skills, sharpen your negotiation tactics, and gain confidence in handling complex, high-stakes scenarios.',
-    sample: ['Iran', 'Israel', 'United States', 'China', 'Ukraine'],
   },
   {
     id: 'business',
+    no: '02',
     name: 'Business Committee',
-    placard: 'Business',
+    short: 'Business',
     formValue: 'Business Committee',
-    kind: 'Business',
+    img: 'gallery/2026/business-track',
     about:
       'This committee simulates the inner workings of global business governance, where delegates act as corporate leaders, regulators, and investors negotiating on trade, investment, and corporate responsibility. Topics range from digital economy regulation to sustainable business practices.',
     why: 'Ideal for future entrepreneurs, economists, or anyone interested in the intersection of business and policy. You’ll learn how real-world economic decisions are made and build skills in persuasive argumentation and strategic compromise.',
-    sample: ['Chief Executive', 'Regulator', 'Investor', 'Supplier', 'Union'],
   },
   {
     id: 'ecosoc',
+    no: '03',
     name: 'ECOSOC – Economic and Social Council',
-    placard: 'ECOSOC',
+    short: 'ECOSOC',
     formValue: 'ECOSOC — Economic and Social Council',
-    kind: 'UN',
+    img: 'gallery/2026/committee-vote',
     about:
       'ECOSOC is the UN’s main platform for discussing global economic and social challenges. Delegates represent member states debating issues like poverty reduction, education access, climate migration, and sustainable development.',
     why: 'A classic UN committee with real diplomatic weight. You’ll gain experience in multilateral negotiation, resolution writing, and policy formulation — skills that are directly transferable to academic, professional, and leadership roles.',
-    sample: ['Japan', 'Brazil', 'Nigeria', 'Canada', 'India'],
   },
   {
     id: 'asean',
+    no: '04',
     name: 'ASEAN Economic Community Council',
-    placard: 'ASEAN',
+    short: 'ASEAN',
     formValue: 'ASEAN Economic Community Council',
-    kind: 'Regional',
+    img: 'gallery/2026/committee-session',
     about:
       'This regional committee focuses on economic cooperation within Southeast Asia. Delegates negotiate on trade agreements, investment policies, supply chain resilience, and sustainable development within the ASEAN framework.',
     why: 'A unique opportunity to explore regional economics and diplomacy in a focused, crisis-driven setting. You’ll develop expertise in regional policy, strategic compromise, and collaborative problem-solving.',
-    sample: ['Vietnam', 'Singapore', 'Indonesia', 'Thailand', 'Malaysia'],
   },
   {
     id: 'european-council',
+    no: '05',
     name: 'Model European Council',
-    placard: 'European Council',
+    short: 'European Council',
     formValue: 'Model European Council',
-    kind: 'Regional',
+    img: 'gallery/2026/delegate-speaking',
     about:
       'Delegates represent EU member states and institutions, negotiating on pressing European issues such as energy policy, migration, digital regulation, and economic integration. The committee mirrors the real decision-making processes of the European Council.',
     why: 'Ideal for those interested in European politics, law, or international relations. You’ll gain hands-on experience in EU-style diplomacy, learn how complex policy decisions are made, and build networking connections with peers passionate about Europe.',
-    sample: ['France', 'Germany', 'Poland', 'Spain', 'Croatia'],
   },
 ]
 
+export const WHAT_WE_ARE = [
+  'MUN is an academic simulation in which students act as delegates representing various countries, working to address real-world issues through the lens of their assigned nation’s policies and perspectives. Participants engage in debates, negotiations, and drafting resolutions, mimicking the procedures of UN committees.',
+  'The Business Simulation at the BDBC is a hands-on, high-pressure corporate decision-making experience. Participants are placed into executive teams and tasked with managing a company through realistic global crises, market shifts, and internal challenges. Over the course of three days, each team must analyse situations, make strategic decisions, and present their outcomes to stakeholders.',
+  'Together, these two modules create something the region has never had before: a space where the next generation of diplomats, entrepreneurs, and changemakers learn side by side.',
+]
+
+export const MODULES = [
+  { label: 'Module 1', name: 'Model UN Simulation', skills: ['Critical thinking', 'Negotiating', 'Resolution drafting', 'Debate', 'Research skills'] },
+  { label: 'Module 2', name: 'Business Simulation', skills: ['Marketing', 'Critical thinking', 'Leadership', 'Report writing', 'Entrepreneurship'] },
+]
+
 export const FOUNDERS = [
-  {
-    name: 'Nina Vujović',
-    photo: 'people/nina',
-    quote:
-      'After years in Model United Nations, I founded BDBC to redefine what youth conferences can achieve. By uniting diplomacy, business, and humanitarian values, BDBC equips the next generation not only to understand the world but to shape it together.',
-  },
-  {
-    name: 'Mateja Stevčević',
-    photo: 'people/mateja',
-    quote:
-      'Every great leader starts with a single opportunity. BDBC was created to be that opportunity for the next generation — a place where ambitious young people can challenge themselves, exchange ideas, and develop the confidence to make a meaningful impact.',
-  },
-  {
-    name: 'Romaric Roland Janković',
-    photo: 'people/romaric',
-    quote:
-      'What I value most about BDBC is watching delegates arrive as strangers and leave as a network of future leaders. We built this conference to open doors — the same doors it opened for us.',
-  },
-  {
-    name: 'Andrej Arizanović',
-    photo: 'people/andrej',
-    quote:
-      'From an early age I wanted to create and lead. BDBC was the start of a bright future for me — and for every delegate who shares the same dreams I do.',
-  },
+  { name: 'Nina Vujović', photo: 'people/nina', quote: 'After years in Model United Nations, I founded BDBC to redefine what youth conferences can achieve. By uniting diplomacy, business, and humanitarian values, BDBC equips the next generation not only to understand the world but to shape it together.' },
+  { name: 'Mateja Stevčević', photo: 'people/mateja', quote: 'Every great leader starts with a single opportunity. BDBC was created to be that opportunity for the next generation — a place where ambitious young people can challenge themselves, exchange ideas, and develop the confidence to make a meaningful impact.' },
+  { name: 'Romaric Roland Janković', photo: 'people/romaric', quote: 'What I value most about BDBC is watching delegates arrive as strangers and leave as a network of future leaders. We built this conference to open doors — the same doors it opened for us.' },
+  { name: 'Andrej Arizanović', photo: 'people/andrej', quote: 'From an early age I wanted to create and lead. BDBC was the start of a bright future for me — and for every delegate who shares the same dreams I do.' },
 ]
 
 export const BOARD = [
@@ -116,6 +116,13 @@ export const BOARD = [
   { name: 'Mateja Stevčević', role: 'President', photo: 'people/mateja' },
   { name: 'Romaric Roland Janković', role: 'Co-President', photo: 'people/romaric' },
   { name: 'Andrej Arizanović', role: 'Project Manager', photo: 'people/andrej' },
+]
+
+export const VALUES = [
+  ['Diplomatic Education', 'We believe every young person deserves access to the negotiation and critical-thinking skills that shape global policy.'],
+  ['Entrepreneurial Spirit', 'Business is not separate from diplomacy — it is diplomacy. We train the next generation to think across both worlds.'],
+  ['Real Humanitarian Action', 'Learning without impact is incomplete. BDBC channels proceeds directly into communities that need support most.'],
+  ['Eastern European Voice', 'We are proud to give the region a stage — showing the world that world-class conferences originate here too.'],
 ]
 
 export const GUESTS = [
@@ -137,58 +144,73 @@ export const PARTNERS = [
   { name: 'Zvečanska Centre', role: 'Humanitarian Partner', logo: 'partners/zvecanska' },
 ]
 
-export const MODULES = [
+export const AGENDA = [
   {
-    name: 'Model UN Simulation',
-    skills: ['Critical thinking', 'Negotiating', 'Resolution drafting', 'Debate', 'Research skills'],
-    text: 'MUN is an academic simulation in which students act as delegates representing various countries, working to address real-world issues through the lens of their assigned nation’s policies and perspectives. Participants engage in debates, negotiations, and drafting resolutions, mimicking the procedures of UN committees.',
+    tag: 'Arrival Day',
+    title: 'Day 1: Registration & Opening',
+    items: [
+      ['15:45 – 16:00', 'Arrival & Registration', 'Logistics'],
+      ['16:30 – 17:15', 'Opening Ceremony', 'Ceremony'],
+      ['17:15 – 18:15', 'Committee in Session', 'Committee'],
+      ['18:15 – 18:30', 'Break', 'Logistics'],
+      ['18:30 – 19:30', 'Committee in Session', 'Committee'],
+    ],
   },
   {
-    name: 'Business Simulation',
-    skills: ['Marketing', 'Critical thinking', 'Leadership', 'Report writing', 'Entrepreneurship'],
-    text: 'The Business Simulation at the BDBC is a hands-on, high-pressure corporate decision-making experience. Participants are placed into executive teams and tasked with managing a company through realistic global crises, market shifts, and internal challenges. Over the course of three days, each team must analyse situations, make strategic decisions, and present their outcomes to stakeholders.',
+    tag: 'Full Conference Day',
+    title: 'Day 2: Committee Sessions',
+    items: [
+      ['10:00 – 10:30', 'Arrival', 'Logistics'],
+      ['10:30 – 11:45', 'Committee in Session', 'Committee'],
+      ['11:45 – 12:00', 'Break', 'Logistics'],
+      ['12:00 – 13:15', 'Committee in Session', 'Committee'],
+      ['13:15 – 14:30', 'Lunch Break', 'Break / Social'],
+      ['14:30 – 15:45', 'Committee in Session', 'Committee'],
+      ['15:45 – 16:00', 'Break', 'Logistics'],
+      ['16:00 – 16:30', 'Committee in Session', 'Committee'],
+    ],
+  },
+  {
+    tag: 'Closing Day',
+    title: 'Day 3: Final Sessions & Closing',
+    items: [
+      ['10:00 – 10:30', 'Arrival', 'Logistics'],
+      ['10:30 – 11:45', 'Committee in Session', 'Committee'],
+      ['11:45 – 12:00', 'Break', 'Logistics'],
+      ['12:00 – 13:15', 'Committee in Session', 'Committee'],
+      ['13:15 – 14:30', 'Lunch Break', 'Break / Social'],
+      ['14:30 – 15:45', 'Committee in Session', 'Committee'],
+      ['Afternoon', 'Closing Ceremony & Awards', 'Ceremony', 'Best delegate awards, certificates, and closing speeches.'],
+    ],
   },
 ]
 
-export const AGENDA = [
-  {
-    day: 'Day 1',
-    title: 'Registration and opening',
-    items: [
-      ['15:45', '16:00', 'Arrival and registration', 'logistics'],
-      ['16:30', '17:15', 'Opening ceremony', 'ceremony'],
-      ['17:15', '18:15', 'Committee in session', 'committee'],
-      ['18:15', '18:30', 'Break', 'logistics'],
-      ['18:30', '19:30', 'Committee in session', 'committee'],
-    ],
-  },
-  {
-    day: 'Day 2',
-    title: 'Committee sessions',
-    items: [
-      ['10:00', '10:30', 'Arrival', 'logistics'],
-      ['10:30', '11:45', 'Committee in session', 'committee'],
-      ['11:45', '12:00', 'Break', 'logistics'],
-      ['12:00', '13:15', 'Committee in session', 'committee'],
-      ['13:15', '14:30', 'Lunch break', 'social'],
-      ['14:30', '15:45', 'Committee in session', 'committee'],
-      ['15:45', '16:00', 'Break', 'logistics'],
-      ['16:00', '16:30', 'Committee in session', 'committee'],
-    ],
-  },
-  {
-    day: 'Day 3',
-    title: 'Final sessions and closing',
-    items: [
-      ['10:00', '10:30', 'Arrival', 'logistics'],
-      ['10:30', '11:45', 'Committee in session', 'committee'],
-      ['11:45', '12:00', 'Break', 'logistics'],
-      ['12:00', '13:15', 'Committee in session', 'committee'],
-      ['13:15', '14:30', 'Lunch break', 'social'],
-      ['14:30', '15:45', 'Committee in session', 'committee'],
-      ['Afternoon', '', 'Closing ceremony and awards', 'ceremony', 'Best Delegate, Best Speaker and Honourable Mention awards, certificates, and closing speeches.'],
-    ],
-  },
+export const REASONS = [
+  ['Real-World Skills', 'Develop negotiation, public speaking, critical thinking, and business strategy through hands-on experience — not just lectures.', '5 committees, two modules, one conference'],
+  ['International Network', 'Debate alongside delegates of more than 35 different nationalities — and meet the guest diplomats, entrepreneurs, and future leaders who share your ambition.', '35+ nationalities among delegates'],
+  ['Business Exposure', 'Pitch startup ideas, learn from founders, and understand markets — while still in school or university.', 'First MUN + business modules in Eastern Europe'],
+  ['Diplomatic Experience', 'Simulate real UN committees, debate genuine global resolutions, and understand how international policy is actually made.', 'Authentic UN committee format'],
+  ['Certificates & Recognition', 'Leave with certificates of participation, best-delegate awards, and credentials that stand out on university and job applications.', 'Embassy-recognized conference'],
+  ['Social Impact', 'Your attendance directly funds humanitarian work — food donations and scholarship partnerships. You contribute just by being there.', '300+ kg donated; scholarships funded'],
+]
+
+export const COMPARE = [
+  ['Authentic MUN Format', '✓', '✓'],
+  ['Business Committee', '✓', '✕'],
+  ['Embassy-Endorsed', '✓', 'Rare'],
+  ['International Delegates', '✓', '✓'],
+  ['Certificate of Participation', '✓', '✓'],
+  ['Social Impact', '✓', 'Rare'],
+  ['Diplomacy Meets Business', '✓', '✕'],
+  ['Expert Guest Speakers', '✓', 'Rare'],
+  ['Career Development', '✓', 'Limited'],
+]
+
+export const FIRST = [
+  ['Universities read it', 'Admissions officers skim thousands of near-identical applications. “Represented Japan at an international conference in Belgrade” stands out, and you can talk about it in an interview for ten minutes without running out of material.'],
+  ['Skills school never grades', 'Public speaking in English. Negotiating with someone who wants the opposite of what you want. Holding a room’s attention. A committee demands all three in one weekend.'],
+  ['A network across borders', 'Delegates come from 35+ nationalities. The person seated next to you might study law in Vienna or run a student business in Skopje. People stay in touch long after the closing ceremony.'],
+  ['Proof you can show', 'Every delegate receives a participation certificate. Chairs award Best Delegate, Best Speaker and Honourable Mention in each committee. All of it goes straight onto a CV or a university application.'],
 ]
 
 export const GALLERY = [
@@ -218,8 +240,4 @@ export const GALLERY = [
 export const FORM_OPTIONS = {
   education: ['Elementary School', 'High School', 'University', 'Employed', 'Other'],
   dietary: ['None', 'Vegetarian', 'Vegan', 'Kosher', 'Halal', 'Gluten-free', 'Other'],
-  payment: [
-    { value: 'Bank transfer (€45)', label: 'Bank transfer, €45', note: 'Instructions arrive by email after you apply. Your seat is confirmed when the transfer arrives.' },
-    { value: 'Cash at the conference (€50)', label: 'Cash on the first day, €50', note: 'Your seat is not guaranteed until you pay.' },
-  ],
 }

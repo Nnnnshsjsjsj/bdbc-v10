@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '@fontsource-variable/archivo/wdth.css'
 import '@fontsource-variable/newsreader/opsz.css'
 import '@fontsource-variable/newsreader/opsz-italic.css'
+import '@fontsource/pinyon-script/400.css'
 import './index.css'
 import App from './App.jsx'
 
