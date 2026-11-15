@@ -490,3 +490,19 @@ dialog::backdrop {
     animation: none !important;
   }
 }
+
+/* Mir's speech bubble */
+.dove-bubble {
+  transform-origin: 85% 100%;
+  animation: bubble-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

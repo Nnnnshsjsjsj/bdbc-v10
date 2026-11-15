@@ -59,7 +59,7 @@ export default function Footer() {
       <div className="flex justify-center overflow-hidden" aria-hidden="true">
         <p className="display select-none whitespace-nowrap text-[30vw] leading-[0.72] text-white/[0.06]">BDBC</p>
       </div>
-      <div className="wrap rule flex flex-wrap gap-x-8 gap-y-2 py-6 text-sm text-white/45">
+      <div className="wrap rule flex flex-wrap gap-x-8 gap-y-2 py-6 pr-36 text-sm text-white/45 md:pr-48">
         <span>© {new Date().getFullYear()} Belgrade Diplomacy &amp; Business Conference. All rights reserved.</span>
         <Link to="/privacy" className="ml-auto hover:text-white">
           Privacy

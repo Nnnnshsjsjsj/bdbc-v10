@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Badge from '../components/Badge'
 import { Btn, Eyebrow, Lines } from '../components/ui'
 import { Link } from '../lib/router'
@@ -9,7 +9,7 @@ import { Field } from './Contact'
 
 const EMPTY = { dateOfBirth: '', fullName: '', email: '', phone: '', countryCity: '', socialMedia: '', educationLevel: '', educationOther: '', institution: '', experience: '', committee1: '', committee2: '', committee3: '', countries1: '', countries2: '', countries3: '', dietary: '', dietaryOther: '', motivation: '', paymentMethod: '' }
 const ORD = ['1st', '2nd', '3rd']
-const dove = (detail) => window.dispatchEvent(new CustomEvent('dove', { detail }))
+const dove = (detail) => window.dispatchEvent(new CustomEvent('dove', { detail: typeof detail === 'string' ? { move: detail } : detail }))
 
 export default function Apply() {
   useTitle('Apply')
@@ -21,11 +21,23 @@ export default function Apply() {
     const { name, value, type } = e.target
     setF((v) => ({ ...v, [name]: value }))
     // the dove reacts to the application: a spin for committees, a hop for other choices
-    if (type === 'radio') dove(name.startsWith('committee') ? 'spin' : 'hop')
+    if (type !== 'radio') return
+    if (name.startsWith('committee')) {
+      const c = COMMITTEES.find((x) => x.formValue === value)
+      dove({ move: 'spin', say: `${c ? c.short : 'Good'}! Great choice.` })
+    } else if (name === 'paymentMethod') {
+      dove({ move: 'dance', say: value.startsWith('Bank') ? 'Smart, you save €5.' : 'Cash works too. Bring exact change!' })
+    } else dove({ move: 'hop' })
   }
   // a hop each time a text answer is completed
+  const answered = useRef(new Set())
   const done = (e) => {
-    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName) && e.target.type !== 'radio' && e.target.value.trim()) dove('hop')
+    const el = e.target
+    if (!['INPUT', 'TEXTAREA'].includes(el.tagName) || el.type === 'radio' || !el.value.trim() || answered.current.has(el.name)) return
+    answered.current.add(el.name)
+    const n = answered.current.size
+    const lines = { 1: 'Great start!', 4: 'Keep going!', 7: 'Looking good, delegate.', 10: 'Almost there!' }
+    dove({ move: 'hop', say: lines[n] })
   }
   const country = f.countries1.split(/[,;\n]/)[0]?.trim()
 
@@ -54,7 +66,7 @@ export default function Apply() {
       paymentMethod: f.paymentMethod,
     }
     setState('submitting')
-    dove('celebrate')
+    dove({ move: 'celebrate', say: 'You’re in! See you in Belgrade.', ms: 6000 })
     try {
       await postForm(payload)
       setState('done')

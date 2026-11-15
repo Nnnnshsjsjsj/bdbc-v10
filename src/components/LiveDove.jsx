@@ -3,17 +3,21 @@ import { useRoute } from '../lib/router'
 import { asset, useReady } from '../lib/util'
 
 /*
-  A real white dove (filmed footage, keyed and packed into two sprite sheets)
-  that lives on every page.
+  Mir, the BDBC dove. "Mir" is Serbian for peace.
 
-  - Flies on its own: picks spots on screen, glides there, hovers, moves on.
-  - Follows the visitor's pointer loosely, and darts away if you rush at it.
-  - Click or tap it and it does a loop.
-  - Point at any "Apply" button and it flies over to it.
-  - On the application page it dances: a hop for every answer, a spin for every
-    committee picked, a full celebration when the application is sent.
+  A mascot with a home: he hovers in the bottom-right corner of every page
+  (real white-dove footage, keyed and packed into two sprite sheets) and only
+  leaves it for a quick trick, always flying straight back.
 
-  Other code can make it move with: window.dispatchEvent(new CustomEvent('dove', { detail: 'hop' | 'spin' | 'loop' | 'dance' | 'celebrate' }))
+  - Turns and leans towards the pointer, flaps harder when it comes close.
+  - Click him: a loop and a line.
+  - Point at an Apply button: he hops and cheers.
+  - Application page: a hop for every answer, a spin and a comment for every
+    committee, a lap of the screen with feathers and confetti on submit.
+  - Says one line when you arrive on some pages.
+
+  Other code talks to him with
+    window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'hop' | 'spin' | 'loop' | 'dance' | 'celebrate', say: 'text' } }))
 */
 
 const SHEETS = {
@@ -23,28 +27,47 @@ const SHEETS = {
 const BOX_W = 460
 const BOX_H = 350
 
-const rand = (a, b) => a + Math.random() * (b - a)
+const GREETINGS = {
+  '/': 'Hi, I’m Mir, the BDBC dove. Applications for 2027 are open!',
+  '/committees': 'Five committees, five rooms. Pick one and I’ll save you a seat.',
+  '/apply': 'Let’s do this. I’ll cheer you on.',
+  '/impact': 'Every fee goes to children who need it most.',
+  '/program': 'Three days. Stay for the closing gavel.',
+  '/why-bdbc': 'First conference? Most of us started that way.',
+}
+const CLICK_LINES = ['Coo!', 'Mir means peace.', 'By youth, for youth!', 'See you in Belgrade.', 'Careful, I bruise easily.']
+
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
+const rand = (a, b) => a + Math.random() * (b - a)
 
-// One-off moves layered over the flight. Each returns offsets for progress t (0..1).
+// Moves done at home. Offsets in px / degrees for progress t (0..1).
 const MOVES = {
-  hop: { dur: 0.9, hover: true, fn: (t) => ({ dy: -70 * Math.abs(Math.sin(t * Math.PI * 2)) }) },
-  spin: { dur: 1.1, hover: true, fn: (t) => ({ flip: Math.cos(ease(t) * Math.PI * 4), dy: -30 * Math.sin(t * Math.PI) }) },
+  hop: { dur: 0.8, fn: (t) => ({ dy: -46 * Math.abs(Math.sin(t * Math.PI * 2)) }) },
+  spin: { dur: 1.1, fn: (t) => ({ flip: Math.cos(ease(t) * Math.PI * 4), dy: -24 * Math.sin(t * Math.PI) }) },
+  dance: { dur: 2.2, fn: (t) => ({ rot: 14 * Math.sin(t * Math.PI * 8), dy: -20 * Math.abs(Math.sin(t * Math.PI * 8)) }) },
+  wiggle: { dur: 0.9, fn: (t) => ({ rot: 10 * Math.sin(t * Math.PI * 6) * (1 - t) }) },
+}
+
+// Short flights away from home that always end back at home (offset 0,0).
+const FLIGHTS = {
   loop: {
-    dur: 1.3,
-    hover: false,
-    fn: (t) => {
+    dur: 1.6,
+    fn: (t, vw) => {
       const a = ease(t) * Math.PI * 2
-      return { dx: 90 * Math.sin(a), dy: -90 * (1 - Math.cos(a)), rot: (ease(t) * 360) % 360 }
+      const R = Math.min(130, vw * 0.16)
+      return { dx: -R * Math.sin(a), dy: -R * (1 - Math.cos(a)) }
     },
   },
-  dance: {
-    dur: 2.4,
-    hover: true,
-    fn: (t) => ({ rot: 16 * Math.sin(t * Math.PI * 8), dy: -26 * Math.abs(Math.sin(t * Math.PI * 8)), dx: 30 * Math.sin(t * Math.PI * 4) }),
+  lap: {
+    dur: 4.2,
+    fn: (t, vw, vh) => {
+      const a = ease(t) * Math.PI * 2
+      const rx = vw * 0.4
+      const ry = vh * 0.5
+      return { dx: -rx * (1 - Math.cos(a)), dy: -ry * Math.sin(a / 2) - ry * 0.35 * Math.sin(a) }
+    },
   },
-  wiggle: { dur: 1, hover: true, fn: (t) => ({ rot: 12 * Math.sin(t * Math.PI * 6) * (1 - t) }) },
 }
 
 export default function LiveDove() {
@@ -53,7 +76,11 @@ export default function LiveDove() {
   const canvas = useRef(null)
   const wrap = useRef(null)
   const fx = useRef(null)
+  const disc = useRef(null)
+  const bubbleBox = useRef(null)
+  const api = useRef({})
   const pathRef = useRef(path)
+  pathRef.current = path
   const [on, setOn] = useState(() => {
     try {
       return localStorage.getItem('bdbc-dove') !== 'off'
@@ -61,7 +88,15 @@ export default function LiveDove() {
       return true
     }
   })
-  pathRef.current = path
+  const [bubble, setBubble] = useState(null)
+  const bubbleTimer = useRef(0)
+  const greeted = useRef(new Set())
+
+  api.current.say = (text, ms = 3800) => {
+    clearTimeout(bubbleTimer.current)
+    setBubble({ text, id: Math.random() })
+    bubbleTimer.current = setTimeout(() => setBubble(null), ms)
+  }
 
   useEffect(() => {
     try {
@@ -70,6 +105,19 @@ export default function LiveDove() {
       /* storage unavailable */
     }
   }, [on])
+
+  // one line when arriving on a page (once per page per visit)
+  useEffect(() => {
+    if (!ready || !on) return
+    const line = GREETINGS[path]
+    if (!line || greeted.current.has(path)) return
+    greeted.current.add(path)
+    const t = setTimeout(() => {
+      api.current.say(line, 5200)
+      window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'hop' } }))
+    }, 1500)
+    return () => clearTimeout(t)
+  }, [path, ready, on])
 
   useEffect(() => {
     if (!ready || !on) return
@@ -89,12 +137,19 @@ export default function LiveDove() {
       imgs[k] = im
     }
 
-    // size of the dove on screen
     let W = 0
     let H = 0
+    let D = 0
+    let MARGIN = 0
     const resize = () => {
-      W = clamp(window.innerWidth * 0.16, 130, 270)
+      W = clamp(window.innerWidth * 0.11, 116, 176)
       H = (W * BOX_H) / BOX_W
+      D = Math.round(W * 0.56)
+      MARGIN = window.innerWidth < 640 ? 12 : 22
+      disc.current.style.width = disc.current.style.height = D + 'px'
+      disc.current.style.right = disc.current.style.bottom = MARGIN + 'px'
+      bubbleBox.current.style.bottom = MARGIN + D + H * 0.42 + 'px'
+      bubbleBox.current.style.right = MARGIN - 4 + 'px'
       cv.width = Math.round(W * dpr * 1.5)
       cv.height = Math.round(H * dpr * 1.5)
       cv.style.width = W + 'px'
@@ -105,64 +160,36 @@ export default function LiveDove() {
     resize()
     window.addEventListener('resize', resize)
 
-    // flight state
+    const home = () => ({ x: window.innerWidth - MARGIN - D / 2, y: window.innerHeight - MARGIN - D / 2 - D * 0.28 })
+
     const s = {
-      x: -W,
-      y: window.innerHeight * 0.3,
-      vx: 0,
-      vy: 0,
-      tx: window.innerWidth * 0.72,
-      ty: window.innerHeight * 0.28,
-      maxSpeed: 260,
-      dir: 1,
-      mix: 0, // 0 = side flight, 1 = hovering
+      enter: 0,
+      moves: [],
+      flight: null,
+      dir: -1,
+      mix: 0,
       fSide: 0,
       fHover: 0,
-      pause: 0,
-      nextPick: 3,
-      moves: [],
-      lastPointer: { x: -1, y: -1, t: 0, vx: 0, vy: 0 },
-      perch: null,
+      excite: 0,
+      lean: 0,
+      pointer: { x: -9999, y: -9999 },
       particles: [],
+      lastScroll: window.scrollY,
+      scrollV: 0,
     }
-
-    const pickTarget = () => {
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      const p = s.lastPointer
-      const onApply = pathRef.current === '/apply'
-      if (onApply) {
-        const el = document.querySelector('[data-dove-perch]')
-        if (el) {
-          const r = el.getBoundingClientRect()
-          if (r.bottom > 0 && r.top < vh) {
-            s.tx = clamp(r.left + r.width * rand(0.2, 0.8), 60, vw - 60)
-            s.ty = clamp(r.top + rand(-40, 60), 90, vh - 90)
-            return
-          }
-        }
-      }
-      if (p.t && performance.now() - p.t < 6000 && Math.random() < 0.45) {
-        // keep the visitor company: come close but never sit on the pointer
-        s.tx = clamp(p.x + rand(70, 140) * (Math.random() < 0.5 ? -1 : 1), 60, vw - 60)
-        s.ty = clamp(p.y + rand(-140, -60), 90, vh - 90)
-      } else {
-        // edges of the screen more often than the middle, to keep text readable
-        const edge = Math.random() < 0.7
-        s.tx = edge ? (Math.random() < 0.5 ? rand(60, vw * 0.22) : rand(vw * 0.78, vw - 60)) : rand(vw * 0.25, vw * 0.75)
-        s.ty = rand(100, vh - 120)
-      }
-      s.maxSpeed = rand(200, 330)
-    }
+    const pos = home()
 
     const addMove = (name) => {
-      const m = MOVES[name]
-      if (!m) return
-      if (s.moves.length > 2) s.moves.shift()
-      s.moves.push({ name, t0: performance.now() / 1000, ...m })
+      if (!MOVES[name]) return
+      if (s.moves.length > 1) s.moves.shift()
+      s.moves.push({ ...MOVES[name], t0: performance.now() / 1000 })
+    }
+    const fly = (name) => {
+      if (reduced || !FLIGHTS[name] || s.flight) return
+      s.flight = { ...FLIGHTS[name], t0: performance.now() / 1000 }
     }
 
-    const burst = (x, y, n = 40, confetti = false) => {
+    const burst = (x, y, n, confetti) => {
       const colours = ['#ffffff', '#ffffff', '#b0202a', '#c08f1c', '#152a7c', '#1d5687', '#0b4c3a']
       for (let i = 0; i < n; i++) {
         const a = rand(0, Math.PI * 2)
@@ -171,8 +198,8 @@ export default function LiveDove() {
           x,
           y,
           vx: Math.cos(a) * sp,
-          vy: Math.sin(a) * sp - 120,
-          r: rand(0, Math.PI * 2),
+          vy: Math.sin(a) * sp - 140,
+          r: rand(0, 6.3),
           vr: rand(-4, 4),
           life: rand(1.6, 3.2),
           age: 0,
@@ -184,92 +211,59 @@ export default function LiveDove() {
     }
 
     const onEvent = (e) => {
-      const what = e.detail
-      if (what === 'celebrate') {
-        addMove('loop')
-        setTimeout(() => addMove('spin'), 1300)
-        setTimeout(() => addMove('dance'), 2400)
-        burst(s.x, s.y, 90, true)
-        setTimeout(() => burst(window.innerWidth / 2, window.innerHeight * 0.35, 120, true), 400)
-        s.tx = window.innerWidth * 0.5
-        s.ty = window.innerHeight * 0.4
-        s.pause = 5
-      } else {
-        addMove(what)
-        if (what === 'hop' || what === 'spin') burst(s.x, s.y + 10, what === 'spin' ? 16 : 6)
+      const d = typeof e.detail === 'string' ? { move: e.detail } : e.detail || {}
+      if (d.say) api.current.say(d.say, d.ms)
+      if (d.move === 'celebrate') {
+        fly('lap')
+        burst(window.innerWidth / 2, window.innerHeight * 0.35, 140, true)
+        setTimeout(() => {
+          addMove('spin')
+          const h = home()
+          burst(h.x, h.y, 40, true)
+        }, 4300)
+      } else if (d.move === 'loop') fly('loop')
+      else if (d.move) {
+        addMove(d.move)
+        if (d.move === 'hop' || d.move === 'spin') burst(pos.x, pos.y + 10, d.move === 'spin' ? 14 : 5)
       }
     }
     window.addEventListener('dove', onEvent)
 
     const onMove = (e) => {
-      const now = performance.now()
-      const p = s.lastPointer
-      const dt = Math.max(16, now - (p.t || now - 16)) / 1000
-      p.vx = (e.clientX - p.x) / dt
-      p.vy = (e.clientY - p.y) / dt
-      p.x = e.clientX
-      p.y = e.clientY
-      p.t = now
-      // startle: rushing at the dove sends it off
-      const d = Math.hypot(p.x - s.x, p.y - s.y)
-      if (d < W * 0.6 && Math.hypot(p.vx, p.vy) > 900 && !s.moves.length) {
-        const ang = Math.atan2(s.y - p.y, s.x - p.x)
-        s.tx = clamp(s.x + Math.cos(ang) * 420, 60, window.innerWidth - 60)
-        s.ty = clamp(s.y + Math.sin(ang) * 300, 90, window.innerHeight - 90)
-        s.maxSpeed = 620
-        s.pause = 0
-        s.nextPick = 2
-      }
+      s.pointer.x = e.clientX
+      s.pointer.y = e.clientY
     }
     window.addEventListener('pointermove', onMove, { passive: true })
 
-    // Apply buttons attract the dove
+    let lastCheer = 0
     const onOver = (e) => {
       const btn = e.target.closest?.('a[href$="apply"], a[href="/apply"], [data-cursor="Apply"]')
-      if (!btn) return
-      const r = btn.getBoundingClientRect()
-      s.tx = clamp(r.left + r.width / 2, 60, window.innerWidth - 60)
-      s.ty = clamp(r.top - H * 0.55, 80, window.innerHeight - 80)
-      s.maxSpeed = 520
-      s.perch = btn
-      s.pause = 0
-      s.nextPick = 4
+      if (!btn || pathRef.current === '/apply') return
+      const now = performance.now()
+      if (now - lastCheer < 8000) return
+      lastCheer = now
+      addMove('hop')
+      api.current.say('Go on, claim your seat!', 2600)
     }
     document.addEventListener('pointerover', onOver)
 
-    // click or tap the dove for a loop; tap empty space on touch screens to call it
-    const onDown = (e) => {
-      const d = Math.hypot(e.clientX - s.x, e.clientY - s.y)
-      if (d < W * 0.5) {
-        addMove(Math.random() < 0.5 ? 'loop' : 'spin')
-        burst(s.x, s.y, 10)
-        return
-      }
-      if (e.pointerType === 'touch' && !e.target.closest('a,button,input,select,textarea,label')) {
-        s.tx = e.clientX
-        s.ty = clamp(e.clientY - H * 0.5, 80, window.innerHeight - 80)
-        s.maxSpeed = 420
-        s.pause = 0
-        s.nextPick = 4
-      }
+    api.current.poke = () => {
+      fly('loop')
+      burst(pos.x, pos.y, 10)
+      api.current.say(CLICK_LINES[(Math.random() * CLICK_LINES.length) | 0], 2600)
     }
-    window.addEventListener('pointerdown', onDown)
 
-    // dancing while applying: a little routine every few seconds
     let lastDance = performance.now() / 1000
 
     const drawSheet = (key, frame, alpha) => {
       if (alpha <= 0.01) return
       const sh = SHEETS[key]
-      const im = imgs[key]
       const f = Math.floor(frame) % sh.frames
-      const sx = (f % sh.cols) * sh.w
-      const sy = Math.floor(f / sh.cols) * sh.h
       const scale = cv.width / BOX_W
       const dw = sh.w * scale
       const dh = sh.h * scale
       ctx.globalAlpha = alpha
-      ctx.drawImage(im, sx, sy, sh.w, sh.h, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh)
+      ctx.drawImage(imgs[key], (f % sh.cols) * sh.w, Math.floor(f / sh.cols) * sh.h, sh.w, sh.h, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh)
     }
 
     let last = performance.now() / 1000
@@ -284,87 +278,78 @@ export default function LiveDove() {
       if (loaded < 2) return
       const vw = window.innerWidth
       const vh = window.innerHeight
+      const h = home()
 
-      // --- flight ---
-      if (reduced) {
-        s.x = vw - W * 0.7
-        s.y = vh - H * 0.9
-        s.vx = s.vy = 0
-      } else {
-        s.nextPick -= dt
-        const dx = s.tx - s.x
-        const dy = s.ty - s.y
-        const dist = Math.hypot(dx, dy)
-        if (dist < 30) {
-          s.pause -= dt
-          if (s.perch && !s.moves.length) {
-            addMove('wiggle')
-            s.perch = null
-            s.pause = 1.6
-          }
-          if (s.pause <= 0 || s.nextPick <= 0) {
-            pickTarget()
-            s.pause = rand(0.8, 2.6)
-            s.nextPick = rand(5, 9)
-          }
-        } else if (s.nextPick <= 0) {
-          pickTarget()
-          s.nextPick = rand(5, 9)
+      // fly in to his spot the first time
+      s.enter = Math.min(1, s.enter + dt / 1.8)
+      const e = reduced ? 1 : ease(s.enter)
+      let x = h.x + (1 - e) * (W * 2.5)
+      let y = h.y - (1 - e) * vh * 0.4
+      let flying = e < 0.92
+      if (flying) s.dir = -1
+
+      if (s.flight) {
+        const t = (now - s.flight.t0) / s.flight.dur
+        if (t >= 1) s.flight = null
+        else {
+          const a = s.flight.fn(t, vw, vh)
+          const b = s.flight.fn(Math.min(1, t + 0.01), vw, vh)
+          x += a.dx
+          y += a.dy
+          flying = true
+          if (Math.abs(b.dx - a.dx) > 0.05) s.dir = b.dx > a.dx ? 1 : -1
         }
-        const arrive = clamp(dist / 220, 0, 1)
-        const desX = dist > 1 ? (dx / dist) * s.maxSpeed * arrive : 0
-        const desY = dist > 1 ? (dy / dist) * s.maxSpeed * arrive : 0
-        const k = 2.2
-        s.vx += (desX - s.vx) * k * dt
-        s.vy += (desY - s.vy) * k * dt
-        // a little life when hovering in place
-        s.vy += Math.sin(now * 2.3) * 14 * dt
-        s.x += s.vx * dt
-        s.y += s.vy * dt
       }
 
-      const speed = Math.hypot(s.vx, s.vy)
-      const wantHover = speed < 70 || s.moves.some((m) => m.hover)
-      s.mix += ((wantHover ? 1 : 0) - s.mix) * Math.min(1, dt * 5)
-      if (Math.abs(s.vx) > 25) s.dir = s.vx > 0 ? 1 : -1
+      // pointer awareness: turn and lean towards it, excited when close
+      const pdx = s.pointer.x - h.x
+      const pdy = s.pointer.y - h.y
+      const pd = Math.hypot(pdx, pdy)
+      const near = clamp(1 - (pd - 80) / 420, 0, 1)
+      s.excite += (near - s.excite) * Math.min(1, dt * 3)
+      const leanTo = s.pointer.x < 0 ? 0 : clamp(-pdx / vw, -1, 1) * -14 * (0.4 + near)
+      s.lean += (leanTo - s.lean) * Math.min(1, dt * 3)
+      if (!flying && s.pointer.x >= 0 && Math.abs(pdx) > 40) s.dir = pdx > 0 ? 1 : -1
 
-      // flap speed follows flight speed
-      s.fSide += dt * (16 + speed * 0.05)
-      s.fHover += dt * 22
+      const sv = window.scrollY - s.lastScroll
+      s.lastScroll = window.scrollY
+      s.scrollV += (clamp(Math.abs(sv) / 40, 0, 1) - s.scrollV) * Math.min(1, dt * 4)
 
-      // --- moves ---
-      let mx = 0
-      let my = 0
+      if (!reduced) y += Math.sin(now * 2.4) * (3 + 4 * s.excite) - s.scrollV * 6
+
+      if (pathRef.current === '/apply' && !reduced && now - lastDance > 9 && !s.moves.length && !s.flight) {
+        lastDance = now
+        addMove(['dance', 'hop', 'spin', 'wiggle'][(Math.random() * 4) | 0])
+      }
+
       let mrot = 0
       let flip = 1
       s.moves = s.moves.filter((m) => {
         const t = (now - m.t0) / m.dur
         if (t >= 1) return false
         const o = m.fn(t)
-        mx += o.dx || 0
-        my += o.dy || 0
+        x += o.dx || 0
+        y += o.dy || 0
         mrot += o.rot || 0
         if (o.flip !== undefined) flip *= o.flip
         return true
       })
+      pos.x = x
+      pos.y = y
 
-      // routine on the application page
-      if (pathRef.current === '/apply' && !reduced && now - lastDance > 7 && !s.moves.length) {
-        lastDance = now
-        addMove(['dance', 'hop', 'spin', 'loop'][Math.floor(Math.random() * 4)])
-      }
+      s.mix += ((flying ? 0 : 1) - s.mix) * Math.min(1, dt * 6)
+      s.fSide += dt * 26
+      s.fHover += dt * (reduced ? 0 : 18 + 14 * s.excite + 10 * s.scrollV)
 
-      // --- draw the dove ---
       ctx.clearRect(0, 0, cv.width, cv.height)
       drawSheet('side', s.fSide, 1 - s.mix)
       drawSheet('hover', s.fHover, s.mix)
       ctx.globalAlpha = 1
 
-      const tilt = clamp((Math.atan2(s.vy, Math.abs(s.vx) + 60) * 180) / Math.PI, -28, 28) * (1 - s.mix) * s.dir
-      const sx = s.dir * flip
-      wrap.current.style.transform = `translate3d(${s.x + mx - W / 2}px, ${s.y + my - H / 2}px, 0) rotate(${tilt + mrot}deg) scaleX(${sx})`
+      // the flying clip faces right; the hovering clip's head turns left, so it flips the other way
+      const sx = (s.mix < 0.5 ? s.dir : -s.dir) * flip
+      wrap.current.style.transform = `translate3d(${x - W / 2}px, ${y - H / 2}px, 0) rotate(${s.lean + mrot}deg) scaleX(${sx})`
 
-      // --- feathers and confetti ---
       fctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       fctx.clearRect(0, 0, vw, vh)
       s.particles = s.particles.filter((p) => {
@@ -391,9 +376,7 @@ export default function LiveDove() {
           fctx.moveTo(0, -p.size)
           fctx.lineTo(0, p.size * 1.2)
           fctx.stroke()
-        } else {
-          fctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
-        }
+        } else fctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
         fctx.restore()
         return true
       })
@@ -418,28 +401,51 @@ export default function LiveDove() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('dove', onEvent)
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onDown)
       document.removeEventListener('pointerover', onOver)
       document.removeEventListener('visibilitychange', onVis)
     }
   }, [ready, on])
 
+  if (!on) {
+    return (
+      <button
+        onClick={() => setOn(true)}
+        className="fixed bottom-4 right-4 z-[97] rounded-full bg-ink/80 px-4 py-2.5 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-md transition-colors hover:bg-crimson"
+      >
+        Bring Mir back
+      </button>
+    )
+  }
+
   return (
     <>
-      {on && (
-        <>
-          <canvas ref={fx} className="pointer-events-none fixed inset-0 z-[95] h-screen w-screen" aria-hidden="true" />
-          <div ref={wrap} className="pointer-events-none fixed left-0 top-0 z-[96] will-change-transform" style={{ transform: 'translate3d(-400px,-400px,0)' }} aria-hidden="true">
-            <canvas ref={canvas} className="block drop-shadow-[0_18px_22px_rgba(4,12,26,.35)]" />
+      <canvas ref={fx} className="pointer-events-none fixed inset-0 z-[95] h-screen w-screen" aria-hidden="true" />
+      {/* his perch: a small navy disc in the corner */}
+      <div ref={disc} className="pointer-events-none fixed bottom-5 right-5 z-[94] rounded-full bg-ink shadow-[0_14px_30px_-10px_rgba(4,12,26,.6)] ring-2 ring-gold/70" aria-hidden="true">
+        <div className="absolute inset-0 animate-[ping_2.8s_cubic-bezier(0,0,.2,1)_infinite] rounded-full ring-2 ring-gold/40" />
+      </div>
+      <div ref={wrap} className="fixed left-0 top-0 z-[96] will-change-transform" style={{ transform: 'translate3d(-400px,-400px,0)' }}>
+        <button onClick={() => api.current.poke?.()} className="block rounded-full" aria-label="Mir, the BDBC dove. Click for a trick.">
+          <canvas ref={canvas} className="block drop-shadow-[0_14px_18px_rgba(4,12,26,.35)]" />
+        </button>
+      </div>
+
+      <div ref={bubbleBox} className="pointer-events-none fixed bottom-40 right-5 z-[97] flex max-w-[min(78vw,19rem)] justify-end" aria-live="polite">
+        {bubble && (
+          <div key={bubble.id} className="dove-bubble relative rounded-2xl bg-white px-4 py-3 text-[0.92rem] font-semibold leading-snug text-ink shadow-[0_18px_40px_-12px_rgba(4,12,26,.5)]">
+            {bubble.text}
+            <span className="absolute -bottom-1.5 right-[clamp(22px,2.6vw,38px)] h-3.5 w-3.5 rotate-45 bg-white" aria-hidden="true" />
           </div>
-        </>
-      )}
+        )}
+      </div>
+
       <button
-        onClick={() => setOn((v) => !v)}
-        className="fixed bottom-4 right-4 z-[97] rounded-full bg-ink/70 px-3.5 py-2 text-[0.6rem] font-bold uppercase tracking-[0.16em] text-white/90 backdrop-blur-md transition-colors hover:bg-crimson"
-        aria-pressed={on}
+        onClick={() => setOn(false)}
+        className="fixed bottom-1.5 right-1.5 z-[98] grid h-6 w-6 place-items-center rounded-full bg-ink/70 text-xs font-bold leading-none text-white opacity-50 backdrop-blur-md transition hover:bg-crimson hover:opacity-100"
+        aria-label="Hide Mir the dove"
+        title="Hide Mir"
       >
-        {on ? 'Hide the dove' : 'Bring the dove back'}
+        ×
       </button>
     </>
   )
