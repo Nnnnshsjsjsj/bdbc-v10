@@ -50,8 +50,8 @@ function Hero() {
           <span className="h-2 w-2 rounded-full bg-crimson" />
           Belgrade · End of February 2027
         </p>
-        <div className="relative">
-          <Lines as="h1" className="display t-mega" lines={['Lead the debate.', 'Close the deal.']} />
+        <div className="relative [container-type:inline-size]">
+          <Lines as="h1" className="display whitespace-nowrap text-[14.6cqw]" lines={['Lead the debate.', 'Close the deal.']} />
           <p className="script mt-3 text-[2.6rem] md:absolute md:-top-[1.05em] md:right-[6%] md:mt-0 md:-rotate-6 md:text-[clamp(2.2rem,5.2vw,6rem)]" data-fade data-delay="0.7">
             By Youth, For Youth
           </p>
