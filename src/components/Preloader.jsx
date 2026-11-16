@@ -14,13 +14,15 @@ export default function Preloader({ onDone }) {
       .to('[data-pl-bar]', { scaleX: 1, duration: 1.5, ease: 'power2.inOut' }, 0)
       .to('[data-pl-in]', { yPercent: -110, duration: 0.5, ease: 'power3.in', stagger: 0.04 }, 1.55)
       .to(root.current, { clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'expo.inOut' }, 1.75)
+    // Phones get a quicker curtain so the page is usable sooner.
+    if (window.matchMedia('(max-width: 767px)').matches) tl.timeScale(1.8)
     return () => tl.kill()
   }, [onDone])
   return (
     <div ref={root} className="fixed inset-0 z-[150] flex flex-col bg-ink text-white" style={{ clipPath: 'inset(0 0 0% 0)' }} aria-hidden="true">
       <div className="wrap flex flex-1 items-center justify-center">
         <div className="overflow-hidden">
-          <img data-pl-logo data-pl-in src={asset('logo.png')} alt="" className="h-36 w-36 md:h-48 md:w-48" />
+          <img data-pl-logo data-pl-in src={asset('logo-512.webp')} alt="" className="h-36 w-36 md:h-48 md:w-48" />
         </div>
       </div>
       <div className="wrap flex items-end justify-between pb-8">

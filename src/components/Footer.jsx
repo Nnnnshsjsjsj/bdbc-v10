@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="h-1 bg-gradient-to-r from-gold via-crimson to-crimson" />
       <div className="wrap grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr] md:py-24">
         <div>
-          <img src={asset('logo.png')} alt="BDBC logo" className="h-20 w-20" />
+          <img src={asset('logo-256.webp')} alt="BDBC logo" className="h-20 w-20" />
           <p className="mt-6 text-2xl font-bold leading-tight">
             Belgrade Diplomacy &amp; Business
             <br />
@@ -18,7 +18,7 @@ export default function Footer() {
         </div>
         <div>
           <h2 className="label text-white/50">Quick Links</h2>
-          <ul className="mt-6 space-y-3 text-lg">
+          <ul className="mt-6 space-y-5 text-lg md:space-y-3">
             {[
               ['/about', 'About'],
               ['/program', 'Agenda'],
@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
         <div>
           <h2 className="label text-white/50">Connect</h2>
-          <ul className="mt-6 space-y-3 text-lg">
+          <ul className="mt-6 space-y-5 text-lg md:space-y-3">
             <li>
               <a className="ulink" href={`mailto:${EVENT.email}`}>
                 {EVENT.email}
@@ -59,12 +59,12 @@ export default function Footer() {
       <div className="flex justify-center overflow-hidden" aria-hidden="true">
         <p className="display select-none whitespace-nowrap text-[30vw] leading-[0.72] text-white/[0.06]">BDBC</p>
       </div>
-      <div className="wrap rule flex flex-wrap gap-x-8 gap-y-2 py-6 pr-36 text-sm text-white/45 md:pr-48">
+      <div className="wrap rule flex flex-wrap gap-x-8 gap-y-4 py-6 pr-36 text-sm text-white/45 md:pr-48">
         <span>© {new Date().getFullYear()} Belgrade Diplomacy &amp; Business Conference. All rights reserved.</span>
-        <Link to="/privacy" className="ml-auto hover:text-white">
+        <Link to="/privacy" className="tap ml-auto hover:text-white">
           Privacy
         </Link>
-        <Link to="/terms" className="hover:text-white">
+        <Link to="/terms" className="tap hover:text-white">
           Terms
         </Link>
       </div>

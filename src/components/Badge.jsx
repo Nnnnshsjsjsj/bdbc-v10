@@ -36,7 +36,7 @@ export default function Badge({ name = 'Your Name Here', country = 'Your Country
         {swing && <div className="badge__strap" aria-hidden="true" />}
         <div className="badge__clip" aria-hidden="true" />
         <div className="badge__card">
-          <img src={asset('logo.png')} alt="BDBC logo" className="mx-auto h-24 w-24" />
+          <img src={asset('logo-256.webp')} alt="BDBC logo" className="mx-auto h-24 w-24" />
           <p className="label mt-5 text-crimson">BDBC 2027</p>
           <p className="mt-3 text-[1.7rem] font-bold leading-tight tracking-tight" key={name}>
             {name}

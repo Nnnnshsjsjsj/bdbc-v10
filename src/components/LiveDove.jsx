@@ -21,9 +21,11 @@ import { APPLY_HOVER, ARRIVE, CLICK, CLICK_ANNOYED, CLICK_GIVEUP, FAST_SCROLL, I
     window.dispatchEvent(new CustomEvent('dove', { detail: { move: 'hop' | 'spin' | 'loop' | 'dance' | 'celebrate', say: 'text' } }))
 */
 
+// Phones load half-size sheets (fw/fh = frame size inside the -m sheet).
+const SMALL = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
 const SHEETS = {
-  side: { src: 'dove/side.webp', frames: 39, cols: 8, w: 440, h: 323 },
-  hover: { src: 'dove/hover.webp', frames: 30, cols: 6, w: 460, h: 348 },
+  side: { src: SMALL ? 'dove/side-m.webp' : 'dove/side.webp', frames: 39, cols: 8, w: 440, h: 323, fw: SMALL ? 242 : 440, fh: SMALL ? 178 : 323 },
+  hover: { src: SMALL ? 'dove/hover-m.webp' : 'dove/hover.webp', frames: 30, cols: 6, w: 460, h: 348, fw: SMALL ? 253 : 460, fh: SMALL ? 191 : 348 },
 }
 const BOX_W = 460
 const BOX_H = 350
@@ -93,7 +95,9 @@ export default function LiveDove() {
     lastSaid.current = now
     clearTimeout(bubbleTimer.current)
     setBubble({ text, id: Math.random() })
-    bubbleTimer.current = setTimeout(() => setBubble(null), ms || clamp(2400 + text.length * 48, 2600, 7000))
+    // Phones: shorter on screen, since the bubble covers more of a small screen.
+    const life = ms || clamp(2400 + text.length * 48, 2600, 7000)
+    bubbleTimer.current = setTimeout(() => setBubble(null), SMALL ? Math.min(life * 0.75, 4500) : life)
     return true
   }
 
@@ -169,21 +173,27 @@ export default function LiveDove() {
     const fctx = fxc.getContext('2d')
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
+    // The sprite sheets wait until the page's own content has loaded, so Mir
+    // never slows down the first screen on a phone.
     const imgs = {}
     let loaded = 0
-    for (const k of Object.keys(SHEETS)) {
-      const im = new Image()
-      im.onload = () => loaded++
-      im.src = asset(SHEETS[k].src)
-      imgs[k] = im
+    const loadSheets = () => {
+      for (const k of Object.keys(SHEETS)) {
+        const im = new Image()
+        im.onload = () => loaded++
+        im.src = asset(SHEETS[k].src)
+        imgs[k] = im
+      }
     }
+    if (document.readyState === 'complete') loadSheets()
+    else window.addEventListener('load', loadSheets, { once: true })
 
     let W = 0
     let H = 0
     let D = 0
     let MARGIN = 0
     const resize = () => {
-      W = clamp(window.innerWidth * 0.11, 116, 176)
+      W = window.innerWidth < 640 ? 96 : clamp(window.innerWidth * 0.11, 116, 176)
       H = (W * BOX_H) / BOX_W
       D = Math.round(W * 0.56)
       MARGIN = window.innerWidth < 640 ? 12 : 22
@@ -191,8 +201,9 @@ export default function LiveDove() {
       disc.current.style.right = disc.current.style.bottom = MARGIN + 'px'
       bubbleBox.current.style.bottom = MARGIN + D + H * 0.42 + 'px'
       bubbleBox.current.style.right = MARGIN - 4 + 'px'
-      cv.width = Math.round(W * dpr * 1.5)
-      cv.height = Math.round(H * dpr * 1.5)
+      const over = SMALL ? 1.25 : 1.5
+      cv.width = Math.round(W * dpr * over)
+      cv.height = Math.round(H * dpr * over)
       cv.style.width = W + 'px'
       cv.style.height = H + 'px'
       fxc.width = window.innerWidth * dpr
@@ -354,7 +365,7 @@ export default function LiveDove() {
       const dw = sh.w * scale
       const dh = sh.h * scale
       ctx.globalAlpha = alpha
-      ctx.drawImage(imgs[key], (f % sh.cols) * sh.w, Math.floor(f / sh.cols) * sh.h, sh.w, sh.h, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh)
+      ctx.drawImage(imgs[key], (f % sh.cols) * sh.fw, Math.floor(f / sh.cols) * sh.fh, sh.fw, sh.fh, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh)
     }
 
     let last = performance.now() / 1000
@@ -489,11 +500,17 @@ export default function LiveDove() {
       }
     }
     document.addEventListener('visibilitychange', onVis)
+    const onTouch = (e) => {
+      if (!disc.current?.contains(e.target)) setBubble(null)
+    }
+    if (SMALL) document.addEventListener('pointerdown', onTouch)
 
     return () => {
+      document.removeEventListener('pointerdown', onTouch)
       running = false
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
+      window.removeEventListener('load', loadSheets)
       window.removeEventListener('dove', onEvent)
       window.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerover', onOver)
@@ -526,10 +543,10 @@ export default function LiveDove() {
         </button>
       </div>
 
-      <div ref={bubbleBox} className="pointer-events-none fixed bottom-40 right-5 z-[97] flex max-w-[min(78vw,19rem)] justify-end" aria-live="polite">
+      <div ref={bubbleBox} className="pointer-events-none fixed bottom-40 right-5 z-[97] flex max-w-[min(66vw,19rem)] justify-end sm:max-w-[min(78vw,19rem)]" aria-live="polite">
         {bubble && (
-          <div key={bubble.id} className="dove-bubble relative rounded-2xl bg-white px-4 py-3 text-[0.92rem] font-semibold leading-snug text-ink shadow-[0_18px_40px_-12px_rgba(4,12,26,.5)]">
-            <span className="label mb-1 block text-[0.6rem] text-crimson">Mir</span>
+          <div key={bubble.id} className="dove-bubble relative rounded-2xl bg-white px-3 py-2 text-[0.8rem] font-semibold leading-snug text-ink shadow-[0_18px_40px_-12px_rgba(4,12,26,.5)] sm:px-4 sm:py-3 sm:text-[0.92rem]">
+            <span className="label mb-0.5 block text-[0.55rem] text-crimson sm:mb-1 sm:text-[0.6rem]">Mir</span>
             {bubble.text}
             <span className="absolute -bottom-1.5 right-[clamp(22px,2.6vw,38px)] h-3.5 w-3.5 rotate-45 bg-white" aria-hidden="true" />
           </div>
@@ -538,7 +555,7 @@ export default function LiveDove() {
 
       <button
         onClick={() => setOn(false)}
-        className="fixed bottom-1.5 right-1.5 z-[98] grid h-6 w-6 place-items-center rounded-full bg-ink/70 text-xs font-bold leading-none text-white opacity-50 backdrop-blur-md transition hover:bg-crimson hover:opacity-100"
+        className="fixed bottom-1.5 right-1.5 z-[98] grid h-6 w-6 place-items-center before:absolute before:-inset-2.5 before:content-[''] rounded-full bg-ink/70 text-xs font-bold leading-none text-white opacity-50 backdrop-blur-md transition hover:bg-crimson hover:opacity-100"
         aria-label="Hide Mir the dove"
         title="Hide Mir"
       >

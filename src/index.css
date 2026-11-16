@@ -228,6 +228,19 @@
   background-size: 0 1px;
   background-position: 100% 100%;
 }
+/* On touch screens, text links get a 44px-tall invisible hit area. */
+@media (pointer: coarse) {
+  .ulink,
+  .tap {
+    position: relative;
+  }
+  .ulink::after,
+  .tap::after {
+    content: '';
+    position: absolute;
+    inset: -11px -6px;
+  }
+}
 
 /* ---------- Cursor ---------- */
 .cursor {

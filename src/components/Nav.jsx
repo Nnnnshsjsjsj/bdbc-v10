@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { Link, useRoute } from '../lib/router'
 import { EVENT, PAGES } from '../lib/data'
-import { asset, img } from '../lib/util'
+import { asset, img, useMedia } from '../lib/util'
 
 export default function Nav() {
   const { path } = useRoute()
@@ -10,6 +10,13 @@ export default function Nav() {
   const [hover, setHover] = useState(0)
   const [solid, setSolid] = useState(false)
   const panel = useRef(null)
+  // The menu's photo column only exists on wide screens, and its photos are
+  // fetched the first time the menu opens, not with every page.
+  const wide = useMedia('(min-width: 768px)')
+  const [seen, setSeen] = useState(false)
+  useEffect(() => {
+    if (open) setSeen(true)
+  }, [open])
 
   useEffect(() => setOpen(false), [path])
   useEffect(() => {
@@ -52,7 +59,7 @@ export default function Nav() {
         </a>
         <nav className={`wrap flex items-center gap-4 transition-[height] duration-500 ${solid ? 'h-16' : 'h-20 md:h-24'}`} aria-label="Main">
           <Link to="/" className="mr-auto flex items-center gap-3" aria-label="BDBC home">
-            <img src={asset('logo.png')} alt="BDBC logo" className={`transition-all duration-500 ${solid ? 'h-10 w-10' : 'h-12 w-12 md:h-14 md:w-14'}`} />
+            <img src={asset('logo-256.webp')} alt="BDBC logo" className={`transition-all duration-500 ${solid ? 'h-10 w-10' : 'h-12 w-12 md:h-14 md:w-14'}`} />
             <span className="display text-2xl tracking-wide">BDBC</span>
           </Link>
           <Link to="/apply" className="btn btn-red !hidden !py-3 sm:!inline-flex" data-cursor="Apply">
@@ -91,21 +98,21 @@ export default function Nav() {
               </li>
             ))}
           </ul>
-          <div className="hidden flex-col md:flex" data-mf>
+          {wide && <div className="flex flex-col" data-mf>
             <div className="relative flex-1 overflow-hidden">
-              {PAGES.map(([to, , src], i) => (
+              {seen && PAGES.map(([to, , src], i) => (
                 <img key={to} src={img(src)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${hover === i ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`} />
               ))}
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm opacity-80 md:col-span-2" data-mf>
-            <a className="ulink" href={`mailto:${EVENT.email}`}>
+          </div>}
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-1 text-sm opacity-80 md:col-span-2" data-mf>
+            <a className="ulink py-3" href={`mailto:${EVENT.email}`}>
               {EVENT.email}
             </a>
-            <a className="ulink" href={EVENT.instagram} target="_blank" rel="noreferrer">
+            <a className="ulink py-3" href={EVENT.instagram} target="_blank" rel="noreferrer">
               Instagram {EVENT.handle}
             </a>
-            <a className="ulink" href={EVENT.tiktok} target="_blank" rel="noreferrer">
+            <a className="ulink py-3" href={EVENT.tiktok} target="_blank" rel="noreferrer">
               TikTok {EVENT.handle}
             </a>
             <Link to="/apply" className="btn btn-red ml-auto sm:!hidden">

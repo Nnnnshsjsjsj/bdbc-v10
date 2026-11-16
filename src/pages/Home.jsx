@@ -38,9 +38,7 @@ function Hero() {
   return (
     <section ref={root} className="on-dark grain relative isolate h-[100svh] min-h-[660px] overflow-hidden bg-ink text-white">
       <div data-hero-media className="absolute inset-0 -z-10">
-        <video className="h-full w-full object-cover" autoPlay muted loop playsInline poster={asset('video/belgrade.jpg')} aria-hidden="true">
-          <source src={asset('video/belgrade.mp4')} type="video/mp4" />
-        </video>
+        <HeroVideo />
       </div>
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/95 via-ink/25 to-ink/45" />
 
@@ -62,7 +60,7 @@ function Hero() {
           <p className="max-w-sm text-sm leading-relaxed text-white/70" data-fade data-delay="0.45">
             <strong className="font-semibold text-gold">A fully humanitarian conference</strong> — 100% of the proceeds go to children who need them most.
           </p>
-          <div className="flex flex-wrap gap-3" data-fade data-delay="0.55">
+          <div className="flex flex-wrap gap-3 pr-24 sm:pr-0" data-fade data-delay="0.55">
             <Btn to="/apply" data-cursor="Apply">
               Apply for BDBC 2027
             </Btn>
@@ -76,13 +74,27 @@ function Hero() {
   )
 }
 
+// Phones get a 10-second, 960px cut of the film (0.3 MB instead of 5.5 MB).
+// With Data Saver on, only the still frame is shown.
+function HeroVideo() {
+  const [phone] = useState(() => window.matchMedia('(max-width: 767px)').matches)
+  const [saveData] = useState(() => !!navigator.connection?.saveData)
+  const poster = asset(phone ? 'video/belgrade-m.jpg' : 'video/belgrade.jpg')
+  if (saveData) return <img src={poster} alt="" className="h-full w-full object-cover" />
+  return (
+    <video className="h-full w-full object-cover" autoPlay muted loop playsInline preload="auto" poster={poster} aria-hidden="true">
+      <source src={asset(phone ? 'video/belgrade-m.mp4' : 'video/belgrade.mp4')} type="video/mp4" />
+    </video>
+  )
+}
+
 /* ---------- Slogan band ---------- */
 function Slogan() {
   const item = (
     <span className="flex items-center">
       <span className="display px-[0.25em] text-[clamp(3rem,9vw,9rem)]">By Youth</span>
       <span className="serif-it px-[0.2em] text-[clamp(3rem,9vw,9rem)] leading-none text-crimson">for youth</span>
-      <img src={asset('logo.png')} alt="" className="mx-[2vw] h-[clamp(2.6rem,7vw,7rem)] w-auto" />
+      <img src={asset('logo-256.webp')} alt="" className="mx-[2vw] h-[clamp(2.6rem,7vw,7rem)] w-auto" />
     </span>
   )
   return (
@@ -310,7 +322,7 @@ function Discover() {
           ))}
           <div className="pointer-events-none absolute right-[18%] top-1/2 hidden aspect-[4/5] w-[22vw] -translate-y-1/2 overflow-hidden md:block" aria-hidden="true">
             {DISCOVER.map((d, i) => (
-              <img key={d.to} src={img(d.img)} alt="" className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${hover === i ? 'scale-100 opacity-100' : 'scale-125 opacity-0'}`} style={{ rotate: `${(i - 1) * 3}deg` }} />
+              <img key={d.to} src={img(d.img)} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${hover === i ? 'scale-100 opacity-100' : 'scale-125 opacity-0'}`} style={{ rotate: `${(i - 1) * 3}deg` }} />
             ))}
           </div>
         </ul>

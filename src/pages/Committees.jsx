@@ -14,7 +14,7 @@ export default function Committees() {
         image="gallery/2026/committee-vote"
         intro="At BDBC 2027, delegates will step into five dynamic committees, each designed to challenge their diplomatic, analytical, and strategic skills while offering real-world insights into global affairs. Whether you’re drawn to crisis management, economic policy, or regional cooperation, you’ll find a committee that matches your ambitions — and helps you grow as a leader."
       >
-        <ul className="mt-12 flex flex-wrap gap-2" data-fade data-delay="0.4">
+        <ul className="mt-12 flex flex-wrap gap-2 pr-20 sm:pr-0" data-fade data-delay="0.4">
           {COMMITTEES.map((c) => (
             <li key={c.id}>
               <a href={`#${c.id}`} onClick={(e) => {
