@@ -255,7 +255,7 @@
   border-radius: 50%;
   background: var(--color-crimson);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
-  display: grid;
+  display: none;
   place-items: center;
   transition:
     width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -263,6 +263,13 @@
     margin 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
     background-color 0.3s,
     box-shadow 0.3s;
+}
+/* The custom cursor only exists for a mouse; on phones it stayed parked in
+   the top-left corner as a red dot. */
+@media (pointer: fine) {
+  .cursor {
+    display: grid;
+  }
 }
 .cursor span {
   font-size: 0.62rem;
