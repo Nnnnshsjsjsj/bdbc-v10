@@ -5,7 +5,7 @@ import { Btn, Eyebrow, Lines, Marquee, Photo } from '../components/ui'
 import Badge from '../components/Badge'
 import FogTrophy from '../components/FogTrophy'
 import { AWARDS, COMMITTEES, DISCOVER, GALLERY, PARTNERS, STATS } from '../lib/data'
-import { asset, img, useTitle } from '../lib/util'
+import { asset, img, useMedia, useTitle } from '../lib/util'
 
 export default function Home() {
   useTitle(null)
@@ -255,19 +255,27 @@ function Rooms() {
     })
     return () => mm.revert()
   }, [])
+  // On large screens the intro is the first panel of the pinned horizontal
+  // track. On phones it sits above a swipeable row of rooms, so it isn't
+  // stretched to the height of the tallest card.
+  const wide = useMedia('(min-width: 1024px)')
+  const intro = (
+    <div className="flex shrink-0 flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-10 pt-24 lg:w-[62vw] lg:pb-14 lg:pt-32">
+      <Eyebrow className="mb-8 text-gold">Five committees · One conference</Eyebrow>
+      <Lines id="rooms-h" className="display t-xl" lines={['Committees', 'at BDBC 2027']} />
+      <p className="lede mt-8 max-w-xl text-white/75" data-fade>
+        At BDBC 2027, delegates will step into five dynamic committees, each designed to challenge their diplomatic, analytical, and strategic skills while offering real-world insights into global affairs.
+      </p>
+      <p className="label mt-10 flex items-center gap-3 text-white/50" data-fade>
+        {wide ? 'Scroll' : 'Swipe'} <span className="inline-block h-px w-16 bg-current" /> every committee has its own room
+      </p>
+    </div>
+  )
   return (
     <section ref={section} data-dove-say="home-rooms" className="on-dark overflow-hidden bg-ink-2 text-white" aria-labelledby="rooms-h">
+      {!wide && intro}
       <div ref={track} className="flex snap-x snap-mandatory overflow-x-auto lg:h-screen lg:w-max lg:snap-none lg:overflow-visible">
-        <div className="flex w-screen shrink-0 snap-start flex-col justify-end px-[clamp(1.1rem,3.2vw,3.2rem)] pb-14 pt-32 lg:w-[62vw]">
-          <Eyebrow className="mb-8 text-gold">Five committees · One conference</Eyebrow>
-          <Lines id="rooms-h" className="display t-xl" lines={['Committees', 'at BDBC 2027']} />
-          <p className="lede mt-8 max-w-xl text-white/75" data-fade>
-            At BDBC 2027, delegates will step into five dynamic committees, each designed to challenge their diplomatic, analytical, and strategic skills while offering real-world insights into global affairs.
-          </p>
-          <p className="label mt-10 hidden items-center gap-3 text-white/50 lg:flex" data-fade>
-            Scroll <span className="inline-block h-px w-16 bg-current" /> every committee has its own room
-          </p>
-        </div>
+        {wide && intro}
         {COMMITTEES.map((c) => (
           <article key={c.id} className="relative flex w-[88vw] shrink-0 snap-start flex-col lg:h-screen lg:w-[46vw]" style={{ background: c.bg, color: c.fg }}>
             <div className="relative h-[42vh] overflow-hidden lg:h-[56%]">
